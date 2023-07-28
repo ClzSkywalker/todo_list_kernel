@@ -1,2 +1,1 @@
-pub trait IAggregate {
-}
+pub trait IAggregate: core::fmt::Debug + Clone {}

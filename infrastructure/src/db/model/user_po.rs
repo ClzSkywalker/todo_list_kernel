@@ -64,12 +64,12 @@ pub enum Relation {
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
-            Self::Team => Entity::has_many(super::team::Entity).into(),
+            Self::Team => Entity::has_many(super::team_po::Entity).into(),
         }
     }
 }
 
-impl Related<super::team::Entity> for Entity {
+impl Related<super::team_po::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Team.def()
     }

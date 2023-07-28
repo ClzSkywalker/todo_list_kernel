@@ -1,11 +1,19 @@
-use chrono::{DateTime, Local};
+use base::ddd::aggregate::IAggregate;
 
-#[derive(Debug,Clone)]
-pub struct Task{
-    pub id: i32,
-    pub created_at: DateTime<Local>,
-    pub updated_at: Option<DateTime<Local>>,
-    pub deleted_at: Option<DateTime<Local>>,
-    pub uuid:String,
-    pub created_by:String,
+use crate::share::value_object::task_date::TaskDate;
+
+use super::{task_content::TaskContent, task_mode::TaskMode};
+
+#[derive(Debug, Clone)]
+pub struct Task {
+    pub uuid: String,
+    pub created_by: String,
+    pub devide_id: String,
+    pub parent_id: Option<String>,
+    pub title: String,
+    pub task_date: Option<TaskDate>,
+    pub task_mode: TaskMode,
+    pub task_content: TaskContent,
 }
+
+impl IAggregate for Task {}

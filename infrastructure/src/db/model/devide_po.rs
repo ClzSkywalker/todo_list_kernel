@@ -2,7 +2,7 @@ use chrono::{DateTime, Local};
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Default)]
-#[sea_orm(table_name = "task_content")]
+#[sea_orm(table_name = "devide")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
@@ -10,28 +10,39 @@ pub struct Model {
     pub updated_at: Option<DateTime<Local>>,
     pub deleted_at: Option<DateTime<Local>>,
     pub oc: String,
-    pub content: String,
+    pub classify_id: String,
+    pub created_by: String,
+    pub title: String,
+    pub sort: u32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
+    Classify,
     Task,
 }
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
-            Self::Task => Entity::belongs_to(super::task::Entity)
-                .from(Column::Oc)
-                .to(super::task::Column::Oc)
+            Relation::Task => Entity::has_many(super::task_po::Entity).into(),
+            Relation::Classify => Entity::belongs_to(super::classify_po::Entity)
+                .from(Column::ClassifyId)
+                .to(super::classify_po::Column::Oc)
                 .into(),
         }
     }
 }
 
-impl Related<super::task::Entity> for Entity {
+impl Related<super::task_po::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Task.def()
+    }
+}
+
+impl Related<super::classify_po::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Classify.def()
     }
 }
 

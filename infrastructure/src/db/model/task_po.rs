@@ -6,10 +6,10 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    pub created_at: DateTime<Local>,
+    pub created_at: Option<DateTime<Local>>,
     pub updated_at: Option<DateTime<Local>>,
     pub deleted_at: Option<DateTime<Local>>,
-    pub oc: String,
+    pub uuid: String,
     pub created_by: String,
     pub devide_id: String,
     pub content_id: String,
@@ -32,29 +32,29 @@ pub enum Relation {
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
-            Relation::TaskContent => Entity::has_many(super::task_content::Entity).into(),
-            Relation::TaskMode => Entity::has_many(super::task_mode::Entity).into(),
-            Relation::Devide => Entity::belongs_to(super::devide::Entity)
+            Relation::TaskContent => Entity::has_many(super::task_content_po::Entity).into(),
+            Relation::TaskMode => Entity::has_many(super::task_mode_po::Entity).into(),
+            Relation::Devide => Entity::belongs_to(super::devide_po::Entity)
                 .from(Column::DevideId)
-                .to(super::devide::Column::Oc)
+                .to(super::devide_po::Column::Oc)
                 .into(),
         }
     }
 }
 
-impl Related<super::devide::Entity> for Entity {
+impl Related<super::devide_po::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Devide.def()
     }
 }
 
-impl Related<super::task_content::Entity> for Entity {
+impl Related<super::task_content_po::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::TaskContent.def()
     }
 }
 
-impl Related<super::task_mode::Entity> for Entity {
+impl Related<super::task_mode_po::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::TaskMode.def()
     }

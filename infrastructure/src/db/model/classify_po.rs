@@ -68,22 +68,22 @@ pub enum Relation {
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
-            Relation::Classify => Entity::has_many(super::devide::Entity).into(),
-            Relation::Team => Entity::belongs_to(super::team::Entity)
+            Relation::Classify => Entity::has_many(super::devide_po::Entity).into(),
+            Relation::Team => Entity::belongs_to(super::team_po::Entity)
                 .from(Column::TeamId)
-                .to(super::team::Column::Oc)
+                .to(super::team_po::Column::Oc)
                 .into(),
         }
     }
 }
 
-impl Related<super::devide::Entity> for Entity {
+impl Related<super::devide_po::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Classify.def()
     }
 }
 
-impl Related<super::team::Entity> for Entity {
+impl Related<super::team_po::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Team.def()
     }
