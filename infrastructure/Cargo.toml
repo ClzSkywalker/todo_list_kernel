@@ -14,5 +14,6 @@ sea-orm = { workspace = true }
 sea-query = { workspace = true }
 async-trait = { workspace = true }
 serde = { workspace = true }
+serde_json = { workspace = true }
 tracing = { workspace = true }
 chrono = { workspace = true }

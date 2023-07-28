@@ -1,4 +1,3 @@
-use axum::async_trait;
 use chrono::{DateTime, Local};
 use sea_orm::entity::prelude::*;
 use serde::Serialize;
@@ -76,7 +75,6 @@ impl Related<super::team::Entity> for Entity {
     }
 }
 
-#[async_trait]
 impl ActiveModelBehavior for ActiveModel {
     // async fn before_save<C>(mut self, _db: &C, _insert: bool) -> Result<Self, DbErr>
     // where

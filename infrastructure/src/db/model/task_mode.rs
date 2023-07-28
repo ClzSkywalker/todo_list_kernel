@@ -2,7 +2,7 @@ use chrono::{DateTime, Local};
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel,Default)]
+#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Default)]
 #[sea_orm(table_name = "task_mode")]
 pub struct Model {
     #[sea_orm(primary_key)]
@@ -17,7 +17,7 @@ pub struct Model {
     pub mode_type: String,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromJsonQueryResult,Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromJsonQueryResult, Default)]
 pub struct ModeConfig {
     pub days: Vec<u32>,
 }

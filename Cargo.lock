@@ -728,6 +728,7 @@ dependencies = [
  "sea-orm",
  "sea-query 0.30.0",
  "serde",
+ "serde_json",
  "tracing",
 ]
 
