@@ -17,7 +17,7 @@ use infrastructure::db::repository::task_repository::TaskRepository;
 
 use super::res::{err_to_resp, Responsex};
 
-pub async fn task(
+pub async fn task_create(
     Extension(c): Extension<AppContext>,
     Json(cmd): Json<CreateTaskAbilityCommand>,
 ) -> Responsex<Task> {

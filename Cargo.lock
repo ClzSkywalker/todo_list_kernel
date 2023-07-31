@@ -148,6 +148,7 @@ dependencies = [
  "common",
  "domain",
  "infrastructure",
+ "serde",
  "tower",
  "tower-http",
 ]

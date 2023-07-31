@@ -18,7 +18,7 @@ pub async fn server_api(config: AppConfig) {
     //     config.log_path,
     // );
 
-    let db = match init_db(common::i18n::Locale::En, &"./todo_list.db".to_string()).await {
+    let db = match init_db(common::i18n::Locale::En, &config.db_path).await {
         Ok(r) => r,
         Err(e) => {
             panic!("{}", e)

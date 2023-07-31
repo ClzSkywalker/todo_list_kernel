@@ -2,7 +2,7 @@ use axum::{middleware, Extension, Router};
 use common::contextx::AppContext;
 use infrastructure::db::model::common::GLOBAL_DB;
 
-use crate::handle::unauth_api;
+use crate::handle::{unauth_api, auth_api};
 
 pub fn create_router() -> Router {
     Router::new().nest("/api/v1", global_router())
@@ -11,7 +11,7 @@ pub fn create_router() -> Router {
 fn global_router() -> Router {
     Router::new()
         .nest("/unauth", set_unauth_middleware(unauth_api()))
-        .nest("/auth", set_auth_middleware(unauth_api()))
+        .nest("/auth", set_auth_middleware(auth_api()))
 }
 
 fn set_unauth_middleware(router: Router) -> Router {

@@ -5,8 +5,9 @@ use domain::{
     aggregate::task::model::{task::Task, task_content::TaskContent, task_mode::TaskMode},
     share::value_object::task_date::TaskDate,
 };
+use serde::Deserialize;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct CreateTaskAbilityCommand {
     pub title: String,
     pub task_content: String,
