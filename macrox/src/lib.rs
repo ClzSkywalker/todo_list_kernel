@@ -35,6 +35,7 @@ pub fn generate_i18n_enum(_input: proc_macro::TokenStream) -> proc_macro::TokenS
     // 如果返回的结构中带()这种特殊符号，会自动加上"，恶心
     // 获取 key
     let enum_case = generate_enum_case(&str_list);
+    let id_func = generate_id_func_case(&str_list);
     let trans_func = generate_func(&str_list);
 
     let code = quote! {
@@ -47,6 +48,11 @@ pub fn generate_i18n_enum(_input: proc_macro::TokenStream) -> proc_macro::TokenS
             pub fn trans(&self, locale: Locale) -> String {
                 match self {
                     #(#trans_func)*
+                }
+            }
+            pub fn id(&self) -> i32 {
+                match self {
+                    #(#id_func)*
                 }
             }
         }
@@ -114,10 +120,49 @@ fn generate_enum_case(str_list: &Vec<EnumDefinition>) -> Vec<TokenStream> {
             // 处理参数
             let five_fives = std::iter::repeat("String").take(args.len());
             let v = Vec::from_iter(five_fives).join(",");
-            argsstr.push_str(v.as_str());   
+            argsstr.push_str(v.as_str());
             let args = syn::Ident::new(&argsstr, proc_macro2::Span::call_site());
             quote! {
                 #item(#args),
+            }
+        })
+        .collect::<Vec<_>>();
+
+    enum_case
+}
+
+fn generate_id_func_case(str_list: &Vec<EnumDefinition>) -> Vec<TokenStream> {
+    let enum_case = str_list
+        .iter()
+        .map(|variant| {
+            let item = syn::Ident::new(&variant.key, proc_macro2::Span::call_site());
+
+            let mut argsstr = String::from("");
+            let re = Regex::new(r"%\{(\w+)\}").unwrap();
+            let args: Vec<&str> = re
+                .captures_iter(&variant.en)
+                .map(|item| item.get(1).unwrap().as_str())
+                .collect();
+
+            let id = variant.id;
+            if args.len() == 0 {
+                return quote! {I18nKey::#item=>#id,};
+            }
+
+            // 处理注释
+            // let mut about=String::from("");
+            // about.push_str(args.join(",").as_str());
+            // dbg!(about.to_string());
+            // let about=about;
+            // let _about=syn::Ident::new(&about, proc_macro2::Span::call_site());
+
+            // 处理参数
+            let five_fives = std::iter::repeat("_").take(args.len());
+            let v = Vec::from_iter(five_fives).join(",");
+            argsstr.push_str(v.as_str());
+            let args = syn::Ident::new(&argsstr, proc_macro2::Span::call_site());
+            quote! {
+                I18nKey::#item(#args)=>#id,
             }
         })
         .collect::<Vec<_>>();

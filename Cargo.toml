@@ -11,9 +11,11 @@ members = [
     "common",
     "base",
     "domain",
+    "middlewarex",
     "infrastructure",
     "application",
     "interaction",
+    "bin",
 ]
 
 
@@ -28,6 +30,8 @@ axum = "0.6.12"
 # 中间件
 tower = "0.4"        # features = ["full"]
 tower-http = "0.4.0"
+bytes = "1.4"
+hyper = "0.14"
 
 # orm
 sea-orm = { version = "0.11", features = [

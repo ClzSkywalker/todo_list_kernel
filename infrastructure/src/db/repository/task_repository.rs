@@ -16,6 +16,12 @@ pub struct TaskRepository {
     pub ctx: Arc<AppContext>,
 }
 
+impl TaskRepository {
+    pub fn new(ctx: Arc<AppContext>) -> Self {
+        TaskRepository { ctx: ctx }
+    }
+}
+
 #[async_trait::async_trait]
 impl IRepository for TaskRepository {
     type AG = Task;

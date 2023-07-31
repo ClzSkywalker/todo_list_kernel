@@ -1,6 +1,11 @@
+use std::time::Duration;
+
 use common::{errorx::Errorx, i18n::I18nKey};
 use migration::{Migrator, MigratorTrait};
+use once_cell::sync::OnceCell;
 use sea_orm::{ConnectOptions, Database, DbConn};
+
+pub static GLOBAL_DB: OnceCell<DbConn> = OnceCell::new();
 
 pub async fn init_db(
     locale: common::i18n::Locale,
@@ -15,22 +20,24 @@ pub async fn init_db(
     }
 
     let db_path = "sqlite://".to_string() + db_path;
-    let db: sea_orm::DatabaseConnection =
-        match Database::connect(ConnectOptions::new(db_path)).await {
-            Ok(r) => r,
-            Err(e) => {
-                tracing::error!("{}", e.to_string());
-                return Err(Errorx::new(
-                    locale,
-                    I18nKey::DbInit,
-                ));
-            }
-        };
+    let mut opt = ConnectOptions::new(db_path);
+    opt.max_connections(1000)
+        .min_connections(1)
+        .connect_timeout(Duration::from_secs(8));
+
+    let db: sea_orm::DatabaseConnection = match Database::connect(opt).await {
+        Ok(r) => r,
+        Err(e) => {
+            tracing::error!("{}", e.to_string());
+            return Err(Errorx::new(locale, I18nKey::DbInit));
+        }
+    };
+
+    tracing::info!("Database connected");
 
     match Migrator::up(&db, None).await {
         Ok(_) => {}
         Err(_) => {}
     };
-
     Ok(db)
 }

@@ -1,6 +1,7 @@
 use base::ddd::entity::IEntity;
+use serde::Serialize;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct TaskMode {
     pub uuid: String,
     // pub config: Option<ModeConfig>,

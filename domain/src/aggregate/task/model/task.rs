@@ -1,10 +1,11 @@
 use base::ddd::aggregate::IAggregate;
+use serde::Serialize;
 
 use crate::share::value_object::task_date::TaskDate;
 
 use super::{task_content::TaskContent, task_mode::TaskMode};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Task {
     pub uuid: String,
     pub created_by: String,

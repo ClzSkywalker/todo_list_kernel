@@ -1,5 +1,5 @@
 [package]
-name = "interaction"
+name = "middlewarex"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,12 +7,13 @@ edition = "2021"
 
 [dependencies]
 common = { path = "../common" }
-domain = { path = "../domain" }
-middlewarex = { path = "../middlewarex" }
 infrastructure = { path = "../infrastructure" }
-application = { path = "../application" }
 
+tokio = { workspace = true }
 axum = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
+chrono = { workspace = true }
+tracing = { workspace = true }
 anyhow = { workspace = true }
+sea-orm = { workspace = true }
+bytes = { workspace = true }
+hyper = { workspace = true }

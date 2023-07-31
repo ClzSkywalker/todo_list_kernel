@@ -6,5 +6,5 @@ use crate::ability::task::cmd::create_task_ability_command::CreateTaskAbilityCom
 
 #[async_trait::async_trait]
 pub trait ITaskApplicationService: IApplicationService {
-    async fn create(&self, cmd: CreateTaskAbilityCommand) -> Result<Task>;
+    async fn create(&self, cmd: &CreateTaskAbilityCommand) -> Result<Task>;
 }

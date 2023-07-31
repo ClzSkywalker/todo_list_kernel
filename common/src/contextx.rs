@@ -1,12 +1,7 @@
 use sea_orm::{DatabaseConnection, DatabaseTransaction};
-use std::{
-    fmt::Display,
-    sync::{Arc, RwLock},
-};
+use std::fmt::Display;
 
 use crate::i18n::Locale;
-
-pub type SharedStateCtx = Arc<RwLock<AppContext>>;
 
 #[derive(Debug)]
 pub struct AppContext {
@@ -18,13 +13,13 @@ pub struct AppContext {
 }
 
 impl AppContext {
-    pub fn new(db: DatabaseConnection) -> Self {
+    pub fn new(db: DatabaseConnection, locale: Locale) -> Self {
         Self {
             db,
             tx: None,
             uid: "".to_string(),
             tid: "".to_string(),
-            locale: Locale::En,
+            locale: locale,
         }
     }
 }

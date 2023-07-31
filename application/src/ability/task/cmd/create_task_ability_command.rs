@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use base::ddd::command::ICommand;
 use chrono::{DateTime, Local};
 use common::utils;
@@ -7,6 +6,7 @@ use domain::{
     share::value_object::task_date::TaskDate,
 };
 
+#[derive(Debug, Clone)]
 pub struct CreateTaskAbilityCommand {
     pub title: String,
     pub task_content: String,
@@ -19,19 +19,7 @@ pub struct CreateTaskAbilityCommand {
     pub end_at: Option<DateTime<Local>>,
 }
 
-#[async_trait::async_trait]
-impl ICommand for CreateTaskAbilityCommand {
-    type R = String;
-    async fn check_handler(&self) -> anyhow::Result<()> {
-        Ok(())
-    }
-    async fn check_idempotent(&self) -> anyhow::Result<bool> {
-        Ok(true)
-    }
-    async fn execute(&self) -> anyhow::Result<Self::R> {
-        Err(anyhow!(""))
-    }
-}
+impl ICommand for CreateTaskAbilityCommand {}
 
 impl CreateTaskAbilityCommand {
     pub fn to_task(&self, created_by: String, task_content_id: String) -> Task {
