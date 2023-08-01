@@ -5,11 +5,13 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "task_content")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: i32,
+    pub id: String,
+    #[sea_orm(created_at)]
     pub created_at: Option<DateTime<Local>>,
+    #[sea_orm(updated_at)]
     pub updated_at: Option<DateTime<Local>>,
+    #[sea_orm(deleted_at)]
     pub deleted_at: Option<DateTime<Local>>,
-    pub uuid: String,
     pub content: String,
 }
 
@@ -22,8 +24,8 @@ impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
             Self::Task => Entity::belongs_to(super::task_po::Entity)
-                .from(Column::Uuid)
-                .to(super::task_po::Column::Uuid)
+                .from(Column::Id)
+                .to(super::task_po::Column::Id)
                 .into(),
         }
     }

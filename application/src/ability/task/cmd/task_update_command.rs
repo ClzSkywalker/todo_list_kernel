@@ -1,6 +1,5 @@
 use base::ddd::command::ICommand;
 use chrono::{DateTime, Local};
-use common::utils;
 use domain::{
     aggregate::task::model::{task::Task, task_content::TaskContent, task_mode::TaskMode},
     share::value_object::task_date::TaskDate,
@@ -8,7 +7,8 @@ use domain::{
 use serde::Deserialize;
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct CreateTaskAbilityCommand {
+pub struct TaskUpdateCommand {
+    pub id: String,
     pub title: String,
     pub task_content: String,
     pub task_mode_id: String,
@@ -20,13 +20,13 @@ pub struct CreateTaskAbilityCommand {
     pub end_at: Option<DateTime<Local>>,
 }
 
-impl ICommand for CreateTaskAbilityCommand {}
+impl ICommand for TaskUpdateCommand {}
 
-impl CreateTaskAbilityCommand {
+impl TaskUpdateCommand {
     pub fn to_task(&self, created_by: String, task_content_id: String) -> Task {
         Task {
-            uuid: utils::generate_ulid(),
-            created_by: created_by,
+            uuid: self.id.clone(),
+            uid: created_by,
             devide_id: self.devide_id.clone(),
             parent_id: self.parent_id.clone(),
             title: self.title.clone(),
@@ -40,7 +40,7 @@ impl CreateTaskAbilityCommand {
                 uuid: self.task_mode_id.clone(),
             },
             task_content: TaskContent {
-                uuid: task_content_id,
+                id: task_content_id,
                 content: self.task_content.clone(),
             },
         }

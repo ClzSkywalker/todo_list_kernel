@@ -3,6 +3,13 @@ use sea_orm_migration::prelude::*;
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
+// fn base_fielde<'a, T: IntoTableRef>(b:&'a TableCreateStatement, t: T) -> &'a mut TableCreateStatement {
+//     b
+//         .table(User::Table)
+//         .if_not_exists()
+//         .col(ColumnDef::new(Base::Id).string().not_null().primary_key())
+// }
+
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
@@ -11,17 +18,10 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(User::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(Base::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
+                    .col(ColumnDef::new(Base::Id).string().not_null().primary_key())
                     .col(ColumnDef::new(Base::CreatedAt).date_time())
                     .col(ColumnDef::new(Base::UpdatedAt).date_time())
                     .col(ColumnDef::new(Base::DeletedAt).date_time())
-                    .col(ColumnDef::new(User::Uuid).string().unique_key().not_null())
                     .col(ColumnDef::new(User::TeamIdPort).string().not_null())
                     .col(ColumnDef::new(User::NickName).string())
                     .col(ColumnDef::new(User::MemberType).integer())
@@ -40,18 +40,11 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Team::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(Base::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
+                    .col(ColumnDef::new(Base::Id).string().not_null().primary_key())
                     .col(ColumnDef::new(Base::CreatedAt).date_time())
                     .col(ColumnDef::new(Base::UpdatedAt).date_time())
                     .col(ColumnDef::new(Base::DeletedAt).date_time())
-                    .col(ColumnDef::new(Team::Uuid).string().unique_key().not_null())
-                    .col(ColumnDef::new(Team::CreatedBy).string())
+                    .col(ColumnDef::new(Team::Uid).string())
                     .col(ColumnDef::new(Team::Name).string())
                     .col(ColumnDef::new(Team::Description).string())
                     .to_owned(),
@@ -63,13 +56,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(UserToTeam::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(Base::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
+                    .col(ColumnDef::new(Base::Id).string().not_null().primary_key())
                     .col(ColumnDef::new(Base::CreatedAt).date_time())
                     .col(ColumnDef::new(Base::UpdatedAt).date_time())
                     .col(ColumnDef::new(Base::DeletedAt).date_time())
@@ -92,18 +79,11 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Classify::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(Base::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
+                    .col(ColumnDef::new(Base::Id).string().not_null().primary_key())
                     .col(ColumnDef::new(Base::CreatedAt).date_time())
                     .col(ColumnDef::new(Base::UpdatedAt).date_time())
                     .col(ColumnDef::new(Base::DeletedAt).date_time())
-                    .col(ColumnDef::new(Classify::Uuid).string().unique_key())
-                    .col(ColumnDef::new(Classify::CreatedBy).string())
+                    .col(ColumnDef::new(Classify::Uid).string())
                     .col(ColumnDef::new(Classify::TeamId).string())
                     .col(ColumnDef::new(Classify::Title).string())
                     .col(ColumnDef::new(Classify::Color).string())
@@ -120,19 +100,12 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Devide::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(Base::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
+                    .col(ColumnDef::new(Base::Id).string().not_null().primary_key())
                     .col(ColumnDef::new(Base::CreatedAt).date_time())
                     .col(ColumnDef::new(Base::UpdatedAt).date_time())
                     .col(ColumnDef::new(Base::DeletedAt).date_time())
-                    .col(ColumnDef::new(Devide::Uuid).string().unique_key())
                     .col(ColumnDef::new(Devide::ClassifyId).string())
-                    .col(ColumnDef::new(Devide::CreatedBy).string())
+                    .col(ColumnDef::new(Devide::Uid).string())
                     .col(ColumnDef::new(Devide::Title).string())
                     .col(ColumnDef::new(Devide::Sort).integer())
                     .to_owned(),
@@ -144,17 +117,10 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(TaskContent::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(Base::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
+                    .col(ColumnDef::new(Base::Id).string().not_null().primary_key())
                     .col(ColumnDef::new(Base::CreatedAt).date_time())
                     .col(ColumnDef::new(Base::UpdatedAt).date_time())
                     .col(ColumnDef::new(Base::DeletedAt).date_time())
-                    .col(ColumnDef::new(TaskContent::Uuid).string().unique_key())
                     .col(ColumnDef::new(TaskContent::Content).string())
                     .to_owned(),
             )
@@ -165,18 +131,11 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Task::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(Base::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
+                    .col(ColumnDef::new(Base::Id).string().not_null().primary_key())
                     .col(ColumnDef::new(Base::CreatedAt).date_time())
                     .col(ColumnDef::new(Base::UpdatedAt).date_time())
                     .col(ColumnDef::new(Base::DeletedAt).date_time())
-                    .col(ColumnDef::new(Task::Uuid).string().unique_key())
-                    .col(ColumnDef::new(Task::CreatedBy).integer())
+                    .col(ColumnDef::new(Task::Uid).integer())
                     .col(ColumnDef::new(Task::DevideId).integer())
                     .col(ColumnDef::new(Task::ContentId).integer())
                     .col(ColumnDef::new(Task::TaskModeId).integer())
@@ -195,18 +154,11 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(TaskMode::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(Base::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
+                    .col(ColumnDef::new(Base::Id).string().not_null().primary_key())
                     .col(ColumnDef::new(Base::CreatedAt).date_time())
                     .col(ColumnDef::new(Base::UpdatedAt).date_time())
                     .col(ColumnDef::new(Base::DeletedAt).date_time())
-                    .col(ColumnDef::new(TaskMode::Uuid).string().unique_key())
-                    .col(ColumnDef::new(TaskMode::CreatedBy).string().unique_key())
+                    .col(ColumnDef::new(TaskMode::Uid).string().unique_key())
                     .col(ColumnDef::new(TaskMode::TeamId).integer())
                     .col(ColumnDef::new(TaskMode::ModeType).integer())
                     .col(ColumnDef::new(TaskMode::Config).json())
@@ -246,7 +198,6 @@ enum Base {
 #[derive(Iden)]
 enum User {
     Table,
-    Uuid,
     TeamIdPort,
     NickName,
     MemberType,
@@ -261,8 +212,7 @@ enum User {
 #[derive(Iden)]
 enum Team {
     Table,
-    Uuid,
-    CreatedBy,
+    Uid,
     Name,
     Description,
 }
@@ -278,8 +228,7 @@ enum UserToTeam {
 #[derive(Iden)]
 enum Classify {
     Table,
-    Uuid,
-    CreatedBy,
+    Uid,
     TeamId,
     Title,
     Color,
@@ -292,9 +241,8 @@ enum Classify {
 #[derive(Iden)]
 enum Devide {
     Table,
-    Uuid,
     ClassifyId,
-    CreatedBy,
+    Uid,
     Title,
     Sort,
 }
@@ -302,15 +250,13 @@ enum Devide {
 #[derive(Iden)]
 enum TaskContent {
     Table,
-    Uuid,
     Content,
 }
 
 #[derive(Iden)]
 enum Task {
     Table,
-    Uuid,
-    CreatedBy,
+    Uid,
     DevideId,
     ContentId,
     TaskModeId,
@@ -325,8 +271,7 @@ enum Task {
 #[derive(Iden)]
 enum TaskMode {
     Table,
-    Uuid,
-    CreatedBy,
+    Uid,
     TeamId,
     ModeType,
     Config,

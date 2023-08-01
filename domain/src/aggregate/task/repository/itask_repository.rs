@@ -1,12 +1,14 @@
-use anyhow::Result;
 use base::ddd::repository::IRepository;
 use sea_orm::prelude::async_trait::async_trait;
 
-use crate::aggregate::task::model::task_content::TaskContent;
+use crate::aggregate::task::model::{task::Task, task_content::TaskContent};
 
 #[async_trait]
 pub trait ITaskRepository: IRepository {
-    // async fn by_user_name(&self, user_name: String) -> Result<Task>;
+    async fn first_by_id(&self, id: String) -> anyhow::Result<Option<Task>>;
 
-    async fn insert_content(&self, tc: TaskContent) -> Result<()>;
+    async fn content_insert(&self, tc: TaskContent) -> anyhow::Result<()>;
+    async fn content_delete(&self, id: String) -> anyhow::Result<()>;
+    async fn content_update(&self, tc: TaskContent) -> anyhow::Result<()>;
+    async fn content_first_by_id(&self, id: String) -> anyhow::Result<Option<TaskContent>>;
 }

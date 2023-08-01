@@ -1,1 +1,1 @@
-pub trait ICommand: Clone + Send + Sync {}
+pub trait ICommand:std::fmt::Debug + Clone + Send + Sync {}

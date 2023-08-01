@@ -8,7 +8,7 @@ use super::{task_content::TaskContent, task_mode::TaskMode};
 #[derive(Debug, Clone, Serialize)]
 pub struct Task {
     pub uuid: String,
-    pub created_by: String,
+    pub uid: String,
     pub devide_id: String,
     pub parent_id: Option<String>,
     pub title: String,

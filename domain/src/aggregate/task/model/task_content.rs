@@ -3,7 +3,7 @@ use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct TaskContent {
-    pub uuid: String,
+    pub id: String,
     pub content: String,
 }
 

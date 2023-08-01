@@ -5,13 +5,10 @@ use domain::{
 
 use super::super::model::preclude::*;
 
-pub fn deserialize(
-    task: TaskModel,
-    task_content: TaskContentModel,
-) -> Task {
+pub fn deserialize(task: TaskModel, task_content: TaskContentModel) -> Task {
     Task {
-        uuid: task.uuid,
-        created_by: task.created_by,
+        uuid: task.id,
+        uid: task.uid,
         devide_id: task.devide_id,
         parent_id: task.parent_id,
         title: task.title,
@@ -25,7 +22,7 @@ pub fn deserialize(
             uuid: task.task_mode_id,
         },
         task_content: TaskContent {
-            uuid: task_content.uuid,
+            id: task_content.id,
             content: task_content.content,
         },
     }
@@ -34,14 +31,13 @@ pub fn deserialize(
 pub fn serialize(u: Task) -> TaskModel {
     let td = u.task_date.clone().unwrap_or_default();
     TaskModel {
-        id: 0,
         created_at: None,
         updated_at: None,
         deleted_at: None,
-        uuid: u.uuid,
-        created_by: u.created_by,
+        id: u.uuid,
+        uid: u.uid,
         devide_id: u.devide_id,
-        content_id: u.task_content.uuid,
+        content_id: u.task_content.id,
         task_mode_id: u.task_mode.uuid,
         parent_id: u.parent_id,
         title: u.title,

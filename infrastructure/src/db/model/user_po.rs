@@ -6,11 +6,10 @@ use serde::Serialize;
 #[sea_orm(table_name = "user")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: i32,
+    pub id: String,
     pub created_at: Option<DateTime<Local>>,
     pub updated_at: Option<DateTime<Local>>,
     pub deleted_at: Option<DateTime<Local>>,
-    pub oc: String,
     pub team_id_port: String,
     pub nick_name: String,
     pub member_type: MemberType,

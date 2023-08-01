@@ -11,12 +11,12 @@ pub async fn server_api(config: AppConfig) {
 
     common::log::init_log(&config.log_path);
     tracing::info!("api server srart:{}:{}", LOCAL_HOSE, config.port.clone());
-    // tracing::info!(
-    //     "workspace:{} \ndb:{} \nlog:{}",
-    //     config.workspace,
-    //     config.database_path,
-    //     config.log_path,
-    // );
+    tracing::info!(
+        "port:{} \ndb:{} \nlog:{}",
+        config.port,
+        config.db_path,
+        config.log_path,
+    );
 
     let db = match init_db(common::i18n::Locale::En, &config.db_path).await {
         Ok(r) => r,

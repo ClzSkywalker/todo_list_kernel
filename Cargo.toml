@@ -76,3 +76,5 @@ clap = { version = "4.2.1", features = ["derive"] }
 jsonwebtoken = "8"
 # 正则表达式
 regex = "1"
+# 参数校验
+validator = { version = "0.16", features = ["derive"] }

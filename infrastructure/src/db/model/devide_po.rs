@@ -5,13 +5,12 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "devide")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: i32,
+    pub id: String,
     pub created_at: Option<DateTime<Local>>,
     pub updated_at: Option<DateTime<Local>>,
     pub deleted_at: Option<DateTime<Local>>,
-    pub oc: String,
     pub classify_id: String,
-    pub created_by: String,
+    pub uid: String,
     pub title: String,
     pub sort: u32,
 }
@@ -28,7 +27,7 @@ impl RelationTrait for Relation {
             Relation::Task => Entity::has_many(super::task_po::Entity).into(),
             Relation::Classify => Entity::belongs_to(super::classify_po::Entity)
                 .from(Column::ClassifyId)
-                .to(super::classify_po::Column::Oc)
+                .to(super::classify_po::Column::Id)
                 .into(),
         }
     }

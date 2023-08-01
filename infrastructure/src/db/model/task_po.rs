@@ -5,12 +5,14 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "task")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: i32,
+    pub id: String,
+    #[sea_orm(created_at)]
     pub created_at: Option<DateTime<Local>>,
+    #[sea_orm(updated_at)]
     pub updated_at: Option<DateTime<Local>>,
+    #[sea_orm(deleted_at)]
     pub deleted_at: Option<DateTime<Local>>,
-    pub uuid: String,
-    pub created_by: String,
+    pub uid: String,
     pub devide_id: String,
     pub content_id: String,
     pub task_mode_id: String,
@@ -36,7 +38,7 @@ impl RelationTrait for Relation {
             Relation::TaskMode => Entity::has_many(super::task_mode_po::Entity).into(),
             Relation::Devide => Entity::belongs_to(super::devide_po::Entity)
                 .from(Column::DevideId)
-                .to(super::devide_po::Column::Oc)
+                .to(super::devide_po::Column::Id)
                 .into(),
         }
     }

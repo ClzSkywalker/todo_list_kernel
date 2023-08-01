@@ -5,12 +5,11 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "team")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: i32,
+    pub id: String,
     pub created_at: DateTime<Local>,
     pub updated_at: Option<DateTime<Local>>,
     pub deleted_at: Option<DateTime<Local>>,
-    pub created_by: String,
-    pub oc: String,
+    pub uid: String,
     pub name: String,
     pub description: Option<String>,
 }
@@ -26,8 +25,8 @@ impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
             Self::User => Entity::belongs_to(super::user_po::Entity)
-                .from(Column::CreatedBy)
-                .to(super::user_po::Column::Oc)
+                .from(Column::Uid)
+                .to(super::user_po::Column::Id)
                 .into(),
             Self::Classify => Entity::has_many(super::classify_po::Entity).into(),
         }

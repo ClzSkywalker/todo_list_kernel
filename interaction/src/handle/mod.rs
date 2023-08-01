@@ -1,9 +1,8 @@
+use self::config::get_config;
 use axum::{
     routing::{get, post},
     Router,
 };
-
-use self::config::get_config;
 
 pub mod config;
 pub mod res;

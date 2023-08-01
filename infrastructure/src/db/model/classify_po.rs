@@ -6,12 +6,11 @@ use serde::Serialize;
 #[sea_orm(table_name = "classify")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: i32,
+    pub id: String,
     pub created_at: DateTime<Local>,
     pub updated_at: Option<DateTime<Local>>,
     pub deleted_at: Option<DateTime<Local>>,
-    pub oc: String,
-    pub created_by: String,
+    pub uid: String,
     pub team_id: String,
     pub title: String,
     pub color: String,
@@ -71,7 +70,7 @@ impl RelationTrait for Relation {
             Relation::Classify => Entity::has_many(super::devide_po::Entity).into(),
             Relation::Team => Entity::belongs_to(super::team_po::Entity)
                 .from(Column::TeamId)
-                .to(super::team_po::Column::Oc)
+                .to(super::team_po::Column::Id)
                 .into(),
         }
     }
