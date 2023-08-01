@@ -30,8 +30,8 @@ impl Display for AppContext {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "ctx:{{uid:{},tid:{},locale:{})}}",
-            self.uid, self.tid, self.locale
+            "ctx:{{flow_id:{},uid:{},tid:{},locale:{})}}",
+            self.flow_id, self.uid, self.tid, self.locale
         )
     }
 }

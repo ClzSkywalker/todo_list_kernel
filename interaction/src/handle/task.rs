@@ -7,15 +7,16 @@ use application::{
         service::task_application_service::{self},
     },
 };
-use axum::{Extension, Json};
+use axum::Extension;
 use common::contextx::AppContext;
 use domain::aggregate::task::model::task::Task;
+use middlewarex::validator::ValidatedJson;
 
 use super::res::{err_to_resp, Responsex};
 
 pub async fn task_create(
     Extension(c): Extension<AppContext>,
-    Json(cmd): Json<TaskCreateCommand>,
+    ValidatedJson(cmd): ValidatedJson<TaskCreateCommand>,
 ) -> Responsex<Task> {
     let ctx = Arc::new(c);
     let a = task_application_service::new_task_application_service(ctx.clone());

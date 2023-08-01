@@ -62,8 +62,8 @@ rusty_ulid = "2"
 # 单例
 once_cell = "1.17.0"
 # 枚举转字符串
-strum = "0.24"
-strum_macros = "0.24"
+strum = "0.25"
+strum_macros = "0.25"
 
 # log
 tracing = "0.1"

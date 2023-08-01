@@ -6,9 +6,11 @@ use domain::{
     share::value_object::task_date::TaskDate,
 };
 use serde::Deserialize;
+use validator::Validate;
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Validate)]
 pub struct TaskCreateCommand {
+    #[validate(length(min = 5))]
     pub title: String,
     pub task_content: String,
     pub task_mode_id: String,

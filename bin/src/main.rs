@@ -15,6 +15,7 @@ async fn main() {
             config.port = args.port;
             config.log_path = args.log_path;
             config.db_path = args.db_path;
+            config.version = common::config::VERSION.to_string();
             server_api(config).await
         }
     }
