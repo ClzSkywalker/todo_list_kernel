@@ -5,7 +5,7 @@ use domain::aggregate::task::{
     model::{task::Task, task_content::TaskContent},
     repository::itask_repository::ITaskRepository,
 };
-use sea_orm::{ActiveModelTrait, ActiveValue::NotSet, EntityTrait};
+use sea_orm::{ActiveModelTrait, EntityTrait, Set};
 use std::sync::Arc;
 
 use super::super::model::preclude::*;
@@ -28,14 +28,13 @@ impl IRepository for TaskRepository {
     async fn insert(&self, s: Self::AG) -> anyhow::Result<Self::AG> {
         let mut m = task_converter::serialize(s.clone());
         m.created_at = Some(Local::now());
-        let mut am: TaskActiveModel = m.clone().into();
-        am.id = NotSet;
+        let am: TaskActiveModel = m.clone().into();
         let res = match &self.ctx.tx {
-            Some(r) => am.insert(r),
-            None => am.insert(&self.ctx.db),
+            Some(r) => am.insert(r).await,
+            None => am.insert(&self.ctx.db).await,
         };
 
-        match res.await {
+        match res {
             Ok(_) => {}
             Err(e) => {
                 tracing::error!("{},e:{},model:{:?}", self.ctx.to_string(), e, s);
@@ -46,11 +45,41 @@ impl IRepository for TaskRepository {
     }
 
     async fn delete(&self, id: Self::ID) -> anyhow::Result<()> {
-        let active = TaskEntity::delete_by_id(id.clone());
-        let res = match &__self.ctx.tx {
+        let active = TaskEntity::update(TaskActiveModel {
+            id: Set(id.clone()),
+            deleted_at: Set(Some(Local::now())),
+            ..Default::default()
+        });
+        let res = match &self.ctx.tx {
             Some(r) => active.exec(r).await,
             None => active.exec(&self.ctx.db).await,
         };
+
+        // let active = TaskEntity::find_by_id(id.clone());
+        // let res = match &self.ctx.tx {
+        //     Some(r) => active.one(r).await,
+        //     None => active.one(&self.ctx.db).await,
+        // };
+        // let mut m = match res {
+        //     Ok(r) => match r {
+        //         Some(r) => r,
+        //         None => return Ok(()),
+        //     },
+        //     Err(e) => {
+        //         tracing::error!("{},e:{},id:{:?}", self.ctx.to_string(), e, id);
+        //         anyhow::bail!(e);
+        //     }
+        // };
+        // m.deleted_at = Some(Local::now());
+
+        // let mut active: TaskActiveModel = m.into();
+        // active.not_set(TaskColumn::CreatedAt);
+        // active.not_set(TaskColumn::UpdatedAt);
+
+        // let res = match &self.ctx.tx {
+        //     Some(r) => active.update(r).await,
+        //     None => active.update(&self.ctx.db).await,
+        // };
 
         match res {
             Ok(_) => Ok(()),
@@ -62,7 +91,9 @@ impl IRepository for TaskRepository {
     }
 
     async fn update(&self, ag: Self::AG) -> anyhow::Result<()> {
-        let active: TaskActiveModel = task_converter::serialize(ag.clone()).into();
+        let mut active: TaskActiveModel = task_converter::serialize(ag.clone()).into();
+        active.not_set(TaskColumn::CreatedAt);
+        active.set(TaskColumn::UpdatedAt, Some(Local::now()).into());
         let res = match &self.ctx.tx {
             Some(r) => active.update(r).await,
             None => active.update(&self.ctx.db).await,
@@ -150,13 +181,12 @@ impl ITaskRepository for TaskRepository {
     async fn content_insert(&self, tc: TaskContent) -> anyhow::Result<()> {
         let mut m = task_content_converter::serialize(tc.clone());
         m.created_at = Some(Local::now());
-        let mut am: TaskContentActiveModel = m.clone().into();
-        am.id = NotSet;
+        let am: TaskContentActiveModel = m.clone().into();
         let res = match &self.ctx.tx {
-            Some(r) => am.insert(r),
-            None => am.insert(&self.ctx.db),
+            Some(r) => am.insert(r).await,
+            None => am.insert(&self.ctx.db).await,
         };
-        match res.await {
+        match res {
             Ok(_) => Ok(()),
             Err(e) => {
                 tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, tc);
@@ -175,11 +205,13 @@ impl ITaskRepository for TaskRepository {
                 anyhow::bail!(e)
             }
         };
+        let mut content = task_content_converter::serialize(content);
+        content.updated_at = Some(Local::now());
+        let content: TaskContentActiveModel = content.into();
 
-        let operator = TaskContentEntity::delete_by_id(content.id);
         let r = match &self.ctx.tx {
-            Some(r) => operator.exec(r).await,
-            None => operator.exec(&self.ctx.db).await,
+            Some(r) => content.update(r).await,
+            None => content.update(&self.ctx.db).await,
         };
 
         match r {

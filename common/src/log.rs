@@ -33,7 +33,7 @@ pub fn init_log(path: &str) {
     let info_file = rolling::daily(path, "info")
         .with_max_level(Level::INFO)
         .with_min_level(Level::INFO);
-    let (non_blocking, _guard) = tracing_appender::non_blocking(std::io::stdout());
+    // let (non_blocking, _guard) = tracing_appender::non_blocking(std::io::stdout());
 
     // let console_filter =
     //     EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
@@ -45,6 +45,7 @@ pub fn init_log(path: &str) {
             fmt::Layer::new()
                 .with_timer(MyTimeFormat)
                 .with_line_number(true)
+                .with_test_writer()
                 // .with_filter(filter)
                 // .with_filter(filter::LevelFilter::DEBUG)
                 .with_writer(io::stdout),

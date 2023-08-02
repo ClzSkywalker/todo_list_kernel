@@ -5,7 +5,7 @@ use serde::Serialize;
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Serialize, Default)]
 #[sea_orm(table_name = "user")]
 pub struct Model {
-    #[sea_orm(primary_key)]
+    #[sea_orm(primary_key, auto_increment = false)]
     pub id: String,
     pub created_at: Option<DateTime<Local>>,
     pub updated_at: Option<DateTime<Local>>,

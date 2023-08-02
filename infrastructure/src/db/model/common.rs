@@ -23,7 +23,8 @@ pub async fn init_db(
     let mut opt = ConnectOptions::new(db_path);
     opt.max_connections(1000)
         .min_connections(1)
-        .connect_timeout(Duration::from_secs(8));
+        .connect_timeout(Duration::from_secs(8))
+        .sqlx_logging(true);
 
     let db: sea_orm::DatabaseConnection = match Database::connect(opt).await {
         Ok(r) => r,

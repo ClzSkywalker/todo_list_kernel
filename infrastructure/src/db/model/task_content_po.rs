@@ -4,7 +4,7 @@ use sea_orm::entity::prelude::*;
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Default)]
 #[sea_orm(table_name = "task_content")]
 pub struct Model {
-    #[sea_orm(primary_key)]
+    #[sea_orm(primary_key, auto_increment = false)]
     pub id: String,
     #[sea_orm(created_at)]
     pub created_at: Option<DateTime<Local>>,
@@ -38,3 +38,11 @@ impl Related<super::task_po::Entity> for Entity {
 }
 
 impl ActiveModelBehavior for ActiveModel {}
+
+// impl PrimaryKeyTrait for PrimaryKey {
+//     type ValueType = (i32, i32);
+
+//     fn auto_increment() -> bool {
+//         false
+//     }
+// }

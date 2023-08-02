@@ -77,7 +77,7 @@ where
     async fn from_request(req: Request<B>, state: &S) -> Result<Self, Self::Rejection> {
         // todo 记录请求人
         let uri = req.uri().clone();
-        let path = uri.path();
+        let path = uri.path().to_string();
         let query = uri.query().unwrap_or_default();
 
         let header = req.headers().clone();

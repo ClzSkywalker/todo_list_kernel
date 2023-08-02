@@ -39,6 +39,7 @@ sea-orm = { version = "0.11", features = [
     "runtime-tokio-rustls",
     "macros",
     "with-chrono",
+    "debug-print",
 ] }
 sea-query = "0"
 
