@@ -39,7 +39,7 @@ impl TaskUpdateCommand {
                 end_at: self.end_at,
             }),
             task_mode: TaskMode {
-                uuid: self.task_mode_id.clone(),
+                id: self.task_mode_id.clone(),
             },
             task_content: TaskContent {
                 id: task_content_id,

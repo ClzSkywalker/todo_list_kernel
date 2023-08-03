@@ -19,7 +19,7 @@ pub fn deserialize(task: TaskModel, task_content: TaskContentModel) -> Task {
             end_at: task.end_at,
         }),
         task_mode: TaskMode {
-            uuid: task.task_mode_id,
+            id: task.task_mode_id,
         },
         task_content: TaskContent {
             id: task_content.id,
@@ -38,7 +38,7 @@ pub fn serialize(u: Task) -> TaskModel {
         uid: u.uid,
         devide_id: u.devide_id,
         content_id: u.task_content.id,
-        task_mode_id: u.task_mode.uuid,
+        task_mode_id: u.task_mode.id,
         parent_id: u.parent_id,
         title: u.title,
         completed_at: td.completed_at,

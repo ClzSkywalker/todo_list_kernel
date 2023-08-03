@@ -3,7 +3,7 @@ use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct TaskMode {
-    pub uuid: String,
+    pub id: String,
     // pub config: Option<ModeConfig>,
     // pub mode_type: ModeType,
 }
