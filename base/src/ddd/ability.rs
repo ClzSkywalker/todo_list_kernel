@@ -12,7 +12,7 @@ pub trait IAbility: Send + Sync {
     /// param           {*} self
     /// return          {*}
     ///    
-    async fn check_handler(&self, cmd: &Self::CMD) -> anyhow::Result<()>;
+    async fn check_handler(&mut self, cmd: &Self::CMD) -> anyhow::Result<()>;
 
     ///
     /// Author         : ClzSkywalker
@@ -21,7 +21,7 @@ pub trait IAbility: Send + Sync {
     /// param           {*} self
     /// return          {*}
     ///    
-    async fn check_idempotent(&self, cmd: &Self::CMD) -> anyhow::Result<()>;
+    async fn check_idempotent(&mut self, cmd: &Self::CMD) -> anyhow::Result<()>;
 
     ///
     /// Author         : ClzSkywalker
@@ -32,7 +32,7 @@ pub trait IAbility: Send + Sync {
     ///    
     async fn execute(&self, cmd: &Self::CMD) -> anyhow::Result<Self::R>;
 
-    async fn execute_ability(&self, cmd: &Self::CMD) -> anyhow::Result<Self::R> {
+    async fn execute_ability(&mut self, cmd: &Self::CMD) -> anyhow::Result<Self::R> {
         match self.check_handler(cmd).await {
             Ok(_) => {}
             Err(e) => {

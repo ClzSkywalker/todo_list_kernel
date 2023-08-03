@@ -42,3 +42,27 @@ infrastructure
 └── rpc 无意义，为了演示而摆在这里的，可忽略
 
 ```
+
+application
+```text
+├── ability 能力分层包，因为能力层本质上是一个职责单子的应用服务，因此我把它放在了应用包内
+│   ├── share 能力层所需要的配置
+│   └── user 按照聚合进行能力包划分
+│       ├── UserCreateAbility.java 一个能力一个类
+│       ├── assembler 不同能力之间存在互相调用，两个能力之间的参数转换定义在此处
+│       └── cmd 能力入参
+├── command CQRS的指令包，即为DDD的应用层
+│   ├── UserApplicationService.java 应用服务
+│   ├── cmd 应用服务指令入参
+│   └── impl 应用服务实现类
+├── factory 工厂本身并不是领域的一部分，它只是用来创造聚合,因此我认为它是应用的一部分
+└── query CQRS的查询包
+    ├── UserQueryApplicationService.java 查询应用服务
+    ├── assembler 复杂查询返回数据组装
+    ├── impl 查询应用服务实现类
+    ├── model 查询的出入参
+    │   └── user 按查询场景分包
+    │       ├── dto 出参
+    │       └── qry 查询条件
+    └── repository 查询仓储
+```

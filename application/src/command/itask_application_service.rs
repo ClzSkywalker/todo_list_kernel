@@ -1,9 +1,7 @@
 use base::ddd::application_service::IApplicationService;
 use domain::aggregate::task::model::task::Task;
 
-use crate::ability::task::cmd::{
-    task_create_command::TaskCreateCommand, task_update_command::TaskUpdateCommand,
-};
+use crate::ability::task::cmd::task_create_command::TaskCreateCommand;
 
 #[async_trait::async_trait]
 pub trait ITaskApplicationService: IApplicationService {
@@ -15,9 +13,9 @@ pub trait ITaskApplicationService: IApplicationService {
     /// param           {*} cmd
     /// return          {*}
     ///    
-    async fn create(&self, cmd: &TaskCreateCommand) -> anyhow::Result<Task>;
+    async fn create(&mut self, cmd: &TaskCreateCommand) -> anyhow::Result<Task>;
 
-    async fn update(&self, cmd: &TaskUpdateCommand) -> anyhow::Result<()>;
+    async fn update(&mut self, id: String, cmd: &TaskCreateCommand) -> anyhow::Result<()>;
 
-    async fn delete(&self, id: String) -> anyhow::Result<()>;
+    async fn delete(&mut self, id: String) -> anyhow::Result<()>;
 }

@@ -5,7 +5,10 @@ use axum::{
     http::{header, HeaderValue, StatusCode},
     response::{IntoResponse, Response},
 };
-use common::{errorx::Errorx, i18n::{I18nKey, Locale}};
+use common::{
+    errorx::Errorx,
+    i18n::{I18nKey, Locale},
+};
 use serde::Serialize;
 
 const EMPTY_MSG: String = String::new();

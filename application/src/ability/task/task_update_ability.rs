@@ -12,6 +12,7 @@ pub fn new_task_update_ability<T: ITaskRepository<AG = Task, ID = String>>(
 ) -> impl IAbility<R = Task, CMD = TaskUpdateCommand> {
     TaskUpdateAbility {
         task_repository: task_repository,
+        task_content_id: "".to_string(),
         ctx: ctx,
     }
 }
@@ -21,6 +22,7 @@ where
     TR: ITaskRepository<AG = Task, ID = String>,
 {
     pub task_repository: TR,
+    pub task_content_id: String,
     pub ctx: Arc<AppContext>,
 }
 
@@ -31,42 +33,32 @@ where
 {
     type R = Task;
     type CMD = TaskUpdateCommand;
-    async fn check_handler(&self, cmd: &Self::CMD) -> anyhow::Result<()> {
-        match __self.task_repository.by_id(cmd.id.clone()).await {
-            Ok(_) => {}
-            Err(_) => {
-                anyhow::bail!(Errorx::new(
-                    self.ctx.locale,
-                    common::i18n::I18nKey::TaskNotFound
-                ))
-            }
-        }
-        Ok(())
-    }
-    async fn check_idempotent(&self, _: &Self::CMD) -> anyhow::Result<()> {
-        Ok(())
-    }
-    async fn execute(&self, cmd: &Self::CMD) -> anyhow::Result<Self::R> {
-        let task = match self.task_repository.first_by_id(cmd.id.clone()).await {
+    async fn check_handler(&mut self, cmd: &Self::CMD) -> anyhow::Result<()> {
+        let task = match __self.task_repository.by_id(cmd.id.clone()).await {
             Ok(r) => match r {
                 Some(r) => r,
                 None => {
-                    tracing::error!("{},cmd:{:?}", self.ctx.to_string(), cmd);
                     anyhow::bail!(Errorx::new(
                         self.ctx.locale,
                         common::i18n::I18nKey::TaskNotFound
                     ))
                 }
             },
-            Err(e) => {
-                tracing::error!("{},e:{},cmd:{:?}", self.ctx.to_string(), e, cmd);
+            Err(_) => {
                 anyhow::bail!(Errorx::new(
                     self.ctx.locale,
                     common::i18n::I18nKey::TaskNotFound
                 ))
             }
         };
-        let task = cmd.to_task("test".to_string(), task.task_content.id.clone());
+        self.task_content_id = task.task_content.id;
+        Ok(())
+    }
+    async fn check_idempotent(&mut self, _: &Self::CMD) -> anyhow::Result<()> {
+        Ok(())
+    }
+    async fn execute(&self, cmd: &Self::CMD) -> anyhow::Result<Self::R> {
+        let task = cmd.to_task("test".to_string(), self.task_content_id.clone());
         match self.task_repository.update(task.clone()).await {
             Ok(_) => {}
             Err(e) => {
@@ -74,7 +66,7 @@ where
                 anyhow::bail!(Errorx::new(
                     self.ctx.locale,
                     common::i18n::I18nKey::TaskUpdate
-                ))
+                ));
             }
         };
         Ok(task)

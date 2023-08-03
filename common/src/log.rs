@@ -4,11 +4,9 @@ use chrono::Local;
 
 use tracing::Level;
 use tracing_appender::rolling;
-use tracing_subscriber::filter::{FilterFn, FilterId, self};
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 use tracing_subscriber::fmt::{self, time::FormatTime};
 use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::{EnvFilter, Layer};
 
 #[derive(Debug)]
 struct MyTimeFormat;

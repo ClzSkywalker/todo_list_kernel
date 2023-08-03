@@ -6,6 +6,8 @@ use domain::{
 };
 use serde::Deserialize;
 
+use super::task_create_command::TaskCreateCommand;
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct TaskUpdateCommand {
     pub id: String,
@@ -43,6 +45,21 @@ impl TaskUpdateCommand {
                 id: task_content_id,
                 content: self.task_content.clone(),
             },
+        }
+    }
+
+    pub fn from_task_create(id: String, t: TaskCreateCommand) -> Self {
+        TaskUpdateCommand {
+            id: id,
+            title: t.title,
+            task_content: t.task_content,
+            task_mode_id: t.task_mode_id,
+            parent_id: t.parent_id,
+            devide_id: t.devide_id,
+            completed_at: t.completed_at,
+            give_up_at: t.give_up_at,
+            start_at: t.start_at,
+            end_at: t.end_at,
         }
     }
 }

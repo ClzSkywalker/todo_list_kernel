@@ -1,6 +1,6 @@
 use self::config::get_config;
 use axum::{
-    routing::{get, post},
+    routing::{delete, get, post, put},
     Router,
 };
 
@@ -17,5 +17,8 @@ pub fn auth_api() -> Router {
 }
 
 fn task_api() -> Router {
-    Router::new().route("/", post(task::task_create))
+    Router::new()
+        .route("/", post(task::task_create))
+        .route("/:id", put(task::task_update))
+        .route("/:id", delete(task::task_delete))
 }

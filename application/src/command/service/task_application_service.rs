@@ -1,15 +1,15 @@
 use std::sync::Arc;
 
-use anyhow::Ok;
 use base::ddd::{ability::IAbility, application_service::IApplicationService};
 use common::contextx::AppContext;
-use domain::aggregate::task::model::task::Task;
+use domain::aggregate::task::{model::task::Task, repository::itask_repository::ITaskRepository};
 use infrastructure::db::repository::task_repository::{self};
 
 use crate::{
     ability::task::{
         cmd::{task_create_command::TaskCreateCommand, task_update_command::TaskUpdateCommand},
         task_create_ability::{self},
+        task_update_ability,
     },
     command::itask_application_service::ITaskApplicationService,
 };
@@ -21,38 +21,64 @@ pub fn new_task_application_service(ctx: Arc<AppContext>) -> impl ITaskApplicati
             ctx.clone(),
             task_repository::new_task_repostiory(ctx.clone()),
         ),
+        task_update_ability: task_update_ability::new_task_update_ability(
+            ctx.clone(),
+            task_repository::new_task_repostiory(ctx.clone()),
+        ),
+        task_repository: task_repository::new_task_repostiory(ctx.clone()),
     }
 }
 
-pub struct TaskApplicationService<CB>
+pub struct TaskApplicationService<CTA, UTA, TR>
 where
-    CB: IAbility<R = Task, CMD = TaskCreateCommand>,
+    CTA: IAbility<R = Task, CMD = TaskCreateCommand>,
+    UTA: IAbility<R = Task, CMD = TaskUpdateCommand>,
+    TR: ITaskRepository<AG = Task, ID = String>,
 {
     pub ctx: Arc<AppContext>,
-    pub task_create_ability: CB,
+    pub task_create_ability: CTA,
+    pub task_update_ability: UTA,
+    pub task_repository: TR,
 }
 
-impl<CB> TaskApplicationService<CB> where CB: IAbility<R = Task, CMD = TaskCreateCommand> {}
+impl<CTA, UTA, TR> TaskApplicationService<CTA, UTA, TR>
+where
+    CTA: IAbility<R = Task, CMD = TaskCreateCommand>,
+    UTA: IAbility<R = Task, CMD = TaskUpdateCommand>,
+    TR: ITaskRepository<AG = Task, ID = String>,
+{
+}
 
-impl<CB> IApplicationService for TaskApplicationService<CB> where
-    CB: IAbility<R = Task, CMD = TaskCreateCommand>
+impl<CTA, UTA, TR> IApplicationService for TaskApplicationService<CTA, UTA, TR>
+where
+    CTA: IAbility<R = Task, CMD = TaskCreateCommand>,
+    UTA: IAbility<R = Task, CMD = TaskUpdateCommand>,
+    TR: ITaskRepository<AG = Task, ID = String>,
 {
 }
 
 #[async_trait::async_trait]
-impl<CB> ITaskApplicationService for TaskApplicationService<CB>
+impl<CTA, UTA, TR> ITaskApplicationService for TaskApplicationService<CTA, UTA, TR>
 where
-    CB: IAbility<R = Task, CMD = TaskCreateCommand>,
+    CTA: IAbility<R = Task, CMD = TaskCreateCommand>,
+    UTA: IAbility<R = Task, CMD = TaskUpdateCommand>,
+    TR: ITaskRepository<AG = Task, ID = String>,
 {
-    async fn create(&self, cmd: &TaskCreateCommand) -> anyhow::Result<Task> {
+    async fn create(&mut self, cmd: &TaskCreateCommand) -> anyhow::Result<Task> {
         self.task_create_ability.execute_ability(cmd).await
     }
 
-    async fn update(&self, cmd: &TaskUpdateCommand) -> anyhow::Result<()> {
-        Ok(())
+    async fn update(&mut self, id: String, cmd: &TaskCreateCommand) -> anyhow::Result<()> {
+        let cmd = &TaskUpdateCommand::from_task_create(id, cmd.clone());
+        match __self.task_update_ability.execute_ability(cmd).await {
+            Ok(_) => Ok(()),
+            Err(e) => {
+                anyhow::bail!(e)
+            }
+        }
     }
 
-    async fn delete(&self, id: String) -> anyhow::Result<()> {
-        Ok(())
+    async fn delete(&mut self, id: String) -> anyhow::Result<()> {
+        self.task_repository.delete(id).await
     }
 }

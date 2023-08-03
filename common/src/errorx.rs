@@ -1,6 +1,6 @@
 use std::fmt::{self, Display};
 
-use crate::i18n::{Locale, I18nKey};
+use crate::i18n::{I18nKey, Locale};
 
 #[derive(Debug, Clone, Default)]
 pub struct Errorx {
@@ -20,7 +20,6 @@ impl Errorx {
     pub fn new(locale: Locale, id: I18nKey) -> Self {
         let mut e = Errorx::default();
         e.id = id;
-        e.id = I18nKey::Ok;
         e.msg = e.id.trans(locale);
         e
     }

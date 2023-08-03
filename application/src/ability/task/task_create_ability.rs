@@ -34,10 +34,10 @@ where
 {
     type R = Task;
     type CMD = TaskCreateCommand;
-    async fn check_handler(&self, _: &Self::CMD) -> anyhow::Result<()> {
+    async fn check_handler(&mut self, _: &Self::CMD) -> anyhow::Result<()> {
         Ok(())
     }
-    async fn check_idempotent(&self, _: &Self::CMD) -> anyhow::Result<()> {
+    async fn check_idempotent(&mut self, _: &Self::CMD) -> anyhow::Result<()> {
         Ok(())
     }
     async fn execute(&self, cmd: &Self::CMD) -> anyhow::Result<Self::R> {
