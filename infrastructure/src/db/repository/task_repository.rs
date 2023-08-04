@@ -10,10 +10,7 @@ use sea_orm::{ActiveModelTrait, Condition, EntityTrait, QueryFilter, Set};
 use std::sync::Arc;
 
 use super::super::model::preclude::*;
-use crate::db::{
-    converter::{task_content_converter, task_converter},
-    model::common::GLOBAL_DB,
-};
+use crate::db::converter::{task_content_converter, task_converter};
 
 pub fn new_task_repostiory(ctx: Arc<AppContext>) -> impl ITaskRepository<AG = Task, ID = String> {
     TaskRepository { ctx: ctx }
@@ -32,7 +29,7 @@ impl IRepository for TaskRepository {
     async fn insert(&self, s: Self::AG) -> anyhow::Result<Self::AG> {
         let mut m = task_converter::serialize(s.clone());
         m.created_at = Some(Local::now());
-        let am: TaskActiveModel = m.clone().into();
+        let am: TaskActiveModel = m.into();
         let res = match &self.ctx.tx {
             Some(r) => am.insert(r).await,
             None => am.insert(&self.ctx.db).await,
@@ -54,10 +51,7 @@ impl IRepository for TaskRepository {
             deleted_at: Set(Some(Local::now())),
             ..Default::default()
         })
-        .filter(
-            Condition::any()
-                .add(Expr::col(TaskColumn::DeletedAt).is_null()),
-        );
+        .filter(Condition::any().add(Expr::col(TaskColumn::DeletedAt).is_null()));
         let res = match &self.ctx.tx {
             Some(r) => active.exec(r).await,
             None => active.exec(&self.ctx.db).await,
@@ -82,7 +76,7 @@ impl IRepository for TaskRepository {
 
         let res = match &self.ctx.tx {
             Some(r) => active.exec(r).await,
-            None => active.exec(GLOBAL_DB.get().unwrap()).await,
+            None => active.exec(&self.ctx.db).await,
         };
 
         match res {

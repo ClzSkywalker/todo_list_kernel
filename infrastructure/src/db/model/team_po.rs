@@ -1,3 +1,4 @@
+use super::preclude::*;
 use chrono::{DateTime, Local};
 use sea_orm::entity::prelude::*;
 
@@ -16,26 +17,39 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
-    // #[sea_orm(has_many = "super::fruit::Entity")]
     User,
+    UserTeam,
     Classify,
 }
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
-            Self::User => Entity::belongs_to(super::user_po::Entity)
+            Relation::User => Entity::belongs_to(UserEntity)
                 .from(Column::Uid)
-                .to(super::user_po::Column::Id)
+                .to(UserColumn::Id)
+                .into(),
+            Self::UserTeam => Entity::has_many(UserTeamEntity)
+                .from(Column::Uid)
+                .to(UserTeamColumn::Uid)
                 .into(),
             Self::Classify => Entity::has_many(super::classify_po::Entity).into(),
         }
     }
 }
 
-impl Related<super::user_po::Entity> for Entity {
+impl Related<UserTeamEntity> for Entity {
     fn to() -> RelationDef {
-        Relation::User.def()
+        Relation::UserTeam.def()
+    }
+}
+
+impl Related<UserEntity> for Entity {
+    fn to() -> RelationDef {
+        UserTeamRelation::User.def()
+    }
+    fn via() -> Option<RelationDef> {
+        Some(UserTeamRelation::Team.def().rev())
     }
 }
 

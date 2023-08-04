@@ -1,15 +1,18 @@
-use chrono::{DateTime, Local};
-use sea_orm::entity::prelude::*;
-use serde::Serialize;
+use domain::share::value_object::user_type::{MemberType, RegisterType};
+use sea_orm::{entity::prelude::*, ActiveValue::NotSet, Set};
+use sea_query::enum_def;
 
-#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Serialize, Default)]
+use super::preclude::*;
+
+#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Default)]
 #[sea_orm(table_name = "user")]
+#[enum_def]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: String,
-    pub created_at: Option<DateTime<Local>>,
-    pub updated_at: Option<DateTime<Local>>,
-    pub deleted_at: Option<DateTime<Local>>,
+    pub created_at: Option<DateTimeLocal>,
+    pub updated_at: Option<DateTimeLocal>,
+    pub deleted_at: Option<DateTimeLocal>,
     pub team_id_port: String,
     pub nick_name: String,
     pub member_type: MemberType,
@@ -21,65 +24,58 @@ pub struct Model {
     pub version: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize)]
-#[sea_orm(rs_type = "i32", db_type = "Integer")]
-pub enum MemberType {
-    #[sea_orm(num_value = 0)]
-    Normal,
-    #[sea_orm(num_value = 1)]
-    Member,
-    #[sea_orm(num_value = 2)]
-    Permanent,
-}
-
-impl Default for MemberType {
-    fn default() -> Self {
-        MemberType::Normal
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize)]
-#[sea_orm(rs_type = "i32", db_type = "Integer")]
-pub enum RegisterType {
-    #[sea_orm(num_value = 0)]
-    Uid,
-    #[sea_orm(num_value = 1)]
-    Email,
-    #[sea_orm(num_value = 2)]
-    Phone,
-}
-
-impl Default for RegisterType {
-    fn default() -> Self {
-        RegisterType::Uid
-    }
-}
-
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
     Team,
+    UserTeam,
 }
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
-            Self::Team => Entity::has_many(super::team_po::Entity).into(),
+            Relation::Team => Entity::has_many(TeamEntity).into(),
+            Relation::UserTeam => Entity::has_many(UserTeamEntity)
+                .from(Column::Id)
+                .to(UserTeamColumn::Uid)
+                .into(),
         }
     }
 }
 
-impl Related<super::team_po::Entity> for Entity {
+impl Related<UserTeamEntity> for Entity {
     fn to() -> RelationDef {
-        Relation::Team.def()
+        Relation::UserTeam.def()
     }
 }
 
-impl ActiveModelBehavior for ActiveModel {
-    // async fn before_save<C>(mut self, _db: &C, _insert: bool) -> Result<Self, DbErr>
-    // where
-    //     C: ConnectionTrait,
-    // {
-    //     self.created_at=Set(DateTime::default());
-    //     Ok(self)
-    // }
+impl Related<TeamEntity> for Entity {
+    fn to() -> RelationDef {
+        UserTeamRelation::Team.def()
+    }
+
+    fn via() -> Option<RelationDef> {
+        Some(UserTeamRelation::User.def().rev())
+    }
+}
+
+impl ActiveModelBehavior for ActiveModel {}
+
+impl Model {
+    pub fn into_active_base(&self) -> ActiveModel {
+        ActiveModel {
+            id: Set(self.id.clone()),
+            created_at: NotSet,
+            updated_at: NotSet,
+            deleted_at: NotSet,
+            team_id_port: Set(self.team_id_port.clone()),
+            nick_name: Set(self.nick_name.clone()),
+            member_type: Set(self.member_type.clone()),
+            register_type: Set(self.register_type.clone()),
+            picture: Set(self.picture.clone()),
+            email: Set(self.email.clone()),
+            phone: Set(self.phone.clone()),
+            pwd: Set(self.pwd.clone()),
+            version: Set(self.version.clone()),
+        }
+    }
 }

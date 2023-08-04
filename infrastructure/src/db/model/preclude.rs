@@ -17,11 +17,16 @@ pub use super::super::model::task_po::{
     ModelIden as TaskIden,
 };
 pub use super::super::model::user_po::{
-    Column as UserColumn, Entity as UserEntity, Model as UserModel,
+    ActiveModel as UserActiveModel, Column as UserColumn, Entity as UserEntity, Model as UserModel,
+    ModelIden as UserIden, Relation as UserRelation,
 };
 
 pub use super::super::model::team_po::{
-    Column as TeamColumn, Entity as TeamEntity, Model as TeamModel,
+    ActiveModel as TeamActiveModel, Column as TeamColumn, Entity as TeamEntity, Model as TeamModel,
+    Relation as TeamRelation,
 };
 
-// pub type DateTimeLocal = DateTime<Local>;
+pub use super::super::model::user_to_team_po::{
+    Column as UserTeamColumn, Entity as UserTeamEntity, Model as UserTeamModel,
+    ModelIden as UserTeamIden, Relation as UserTeamRelation,
+};
