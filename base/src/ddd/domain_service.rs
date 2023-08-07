@@ -1,2 +1,1 @@
-
-pub trait IDomainService{}
+pub trait IDomainService: Sync + Send {}

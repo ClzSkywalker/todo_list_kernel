@@ -1,18 +1,18 @@
 use base::ddd::repository::IRepository;
 use chrono::Local;
 use common::contextx::AppContext;
-use domain::aggregate::task::{
-    model::{task::Task, task_content::TaskContent},
-    repository::itask_repository::ITaskRepository,
-};
+use domain::aggregate::task::repository::itask_repository::ITaskRepository;
 use migration::Expr;
 use sea_orm::{ActiveModelTrait, Condition, EntityTrait, QueryFilter, Set};
 use std::sync::Arc;
 
+use super::super::converter::preclude::*;
 use super::super::model::preclude::*;
-use crate::db::converter::{task_content_converter, task_converter};
+use domain::aggregate::preclude::*;
 
-pub fn new_task_repostiory(ctx: Arc<AppContext>) -> impl ITaskRepository<AG = Task, ID = String> {
+pub fn new_task_repostiory(
+    ctx: Arc<AppContext>,
+) -> impl ITaskRepository<AG = TaskAggregate, ID = String> {
     TaskRepository { ctx: ctx }
 }
 
@@ -22,12 +22,12 @@ pub struct TaskRepository {
 
 #[async_trait::async_trait]
 impl IRepository for TaskRepository {
-    type AG = Task;
+    type AG = TaskAggregate;
 
     type ID = String;
 
     async fn insert(&self, s: Self::AG) -> anyhow::Result<Self::AG> {
-        let mut m = task_converter::serialize(s.clone());
+        let mut m = TaskSerialize(s.clone());
         m.created_at = Some(Local::now());
         let am: TaskActiveModel = m.into();
         let res = match &self.ctx.tx {
@@ -67,7 +67,7 @@ impl IRepository for TaskRepository {
     }
 
     async fn update(&self, ag: Self::AG) -> anyhow::Result<()> {
-        let m = task_converter::serialize(ag.clone());
+        let m = TaskSerialize(ag.clone());
         let mut active = (&m).into_active_base();
         active.updated_at = Set(Some(Local::now()));
 
@@ -118,15 +118,15 @@ impl IRepository for TaskRepository {
             }
         };
 
-        let content = task_content_converter::serialize(content);
-        Ok(Some(task_converter::deserialize(task, content)))
+        let content = TaskContentSerialize(content);
+        Ok(Some(TaskDeserialize(task, content)))
     }
 }
 
 #[async_trait::async_trait]
 impl ITaskRepository for TaskRepository {
-    async fn content_insert(&self, tc: TaskContent) -> anyhow::Result<()> {
-        let mut m = task_content_converter::serialize(tc.clone());
+    async fn content_insert(&self, tc: TaskContentDomainEntity) -> anyhow::Result<()> {
+        let mut m = TaskContentSerialize(tc.clone());
         m.created_at = Some(Local::now());
         let am: TaskContentActiveModel = m.clone().into();
         let res = match &self.ctx.tx {
@@ -165,8 +165,8 @@ impl ITaskRepository for TaskRepository {
         }
     }
 
-    async fn content_update(&self, tc: TaskContent) -> anyhow::Result<()> {
-        let mut m = task_content_converter::serialize(tc.clone());
+    async fn content_update(&self, tc: TaskContentDomainEntity) -> anyhow::Result<()> {
+        let mut m = TaskContentSerialize(tc.clone());
         m.updated_at = Some(Local::now());
         let mut active: TaskContentActiveModel = m.into();
         active.not_set(TaskContentColumn::CreatedAt);
@@ -183,7 +183,10 @@ impl ITaskRepository for TaskRepository {
         }
     }
 
-    async fn content_first_by_id(&self, id: String) -> anyhow::Result<Option<TaskContent>> {
+    async fn content_first_by_id(
+        &self,
+        id: String,
+    ) -> anyhow::Result<Option<TaskContentDomainEntity>> {
         let active = TaskContentEntity::find_by_id(id.clone());
         let res = match &self.ctx.tx {
             Some(r) => active.one(r).await,
@@ -193,7 +196,7 @@ impl ITaskRepository for TaskRepository {
         match res {
             Ok(r) => match r {
                 Some(r) => {
-                    let r = task_content_converter::deserialize(r);
+                    let r = TaskContentDeserialize(r);
                     Ok(Some(r))
                 }
                 None => Ok(None),

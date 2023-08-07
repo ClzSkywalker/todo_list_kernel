@@ -1,13 +1,14 @@
 use chrono::{DateTime, Local};
-use sea_orm::entity::prelude::*;
-use serde::Serialize;
+use domain::share::value_object::{classify_order_type::OrderType, classify_show_type::ShowType};
+use sea_orm::{entity::prelude::*, ActiveValue::NotSet, Set};
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Default)]
 #[sea_orm(table_name = "classify")]
+#[sea_query::enum_def]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: String,
-    pub created_at: DateTime<Local>,
+    pub created_at: Option<DateTime<Local>>,
     pub updated_at: Option<DateTime<Local>>,
     pub deleted_at: Option<DateTime<Local>>,
     pub uid: String,
@@ -20,44 +21,6 @@ pub struct Model {
     pub parent_id: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize)]
-#[sea_orm(rs_type = "i32", db_type = "Integer")]
-pub enum ShowType {
-    #[sea_orm(num_value = 0)]
-    Normal,
-    #[sea_orm(num_value = 1)]
-    Simple,
-}
-
-impl Default for ShowType {
-    fn default() -> Self {
-        ShowType::Normal
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize)]
-#[sea_orm(rs_type = "i32", db_type = "Integer")]
-pub enum OrderType {
-    // 默认，创建时间排序
-    #[sea_orm(num_value = 0)]
-    Default,
-    // 分组排序,创建时间
-    #[sea_orm(num_value = 1)]
-    Group,
-    // 截止时间排序
-    #[sea_orm(num_value = 2)]
-    EndTime,
-    // 重要程度排序，创建时间
-    #[sea_orm(num_value = 3)]
-    Important,
-}
-
-impl Default for OrderType {
-    fn default() -> Self {
-        OrderType::Default
-    }
-}
-
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
     Team,
@@ -67,11 +30,11 @@ pub enum Relation {
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
-            Relation::Classify => Entity::has_many(super::devide_po::Entity).into(),
             Relation::Team => Entity::belongs_to(super::team_po::Entity)
                 .from(Column::TeamId)
                 .to(super::team_po::Column::Id)
                 .into(),
+            Relation::Classify => Entity::has_many(super::devide_po::Entity).into(),
         }
     }
 }
@@ -89,3 +52,22 @@ impl Related<super::team_po::Entity> for Entity {
 }
 
 impl ActiveModelBehavior for ActiveModel {}
+
+impl Model {
+    pub fn into_active_base(&self) -> ActiveModel {
+        ActiveModel {
+            id: Set(self.id.clone()),
+            created_at: NotSet,
+            updated_at: NotSet,
+            deleted_at: NotSet,
+            uid: Set(self.uid.clone()),
+            team_id: Set(self.team_id.clone()),
+            title: Set(self.title.clone()),
+            color: Set(self.color.clone()),
+            show_type: Set(self.show_type.clone()),
+            order_type: Set(self.order_type.clone()),
+            sort: Set(self.sort),
+            parent_id: Set(self.parent_id.clone()),
+        }
+    }
+}

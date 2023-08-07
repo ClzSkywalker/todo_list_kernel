@@ -30,25 +30,31 @@
     "zh": "数据库初始化失败"
   },
   {
-    "id": 301001,
+    "id": 201001,
+    "key": "UserCreate",
+    "en": "User creation failure",
+    "zh": "用户创建失败"
+  },
+  {
+    "id": 202001,
     "key": "TaskNotFound",
     "en": "Task not found",
     "zh": "任务未找到"
   },
   {
-    "id": 301002,
+    "id": 202002,
     "key": "TaskAdd",
     "en": "Failed to add task",
     "zh": "新增任务失败"
   },
   {
-    "id": 301003,
+    "id": 202003,
     "key": "TaskUpdate",
     "en": "Failed to modify a task",
     "zh": "修改任务失败"
   },
   {
-    "id": 301004,
+    "id": 202004,
     "key": "TaskDelete",
     "en": "Failed to delete a task",
     "zh": "删除任务失败"

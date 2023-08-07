@@ -1,8 +1,9 @@
 use chrono::{DateTime, Local};
-use sea_orm::entity::prelude::*;
+use sea_orm::{entity::prelude::*, ActiveValue::NotSet, Set};
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Default)]
 #[sea_orm(table_name = "devide")]
+#[sea_query::enum_def]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: String,
@@ -46,3 +47,18 @@ impl Related<super::classify_po::Entity> for Entity {
 }
 
 impl ActiveModelBehavior for ActiveModel {}
+
+impl Model {
+    pub fn into_active_base(&self) -> ActiveModel {
+        ActiveModel {
+            id: Set(self.id.clone()),
+            created_at: NotSet,
+            updated_at: NotSet,
+            deleted_at: NotSet,
+            uid: Set(self.uid.clone()),
+            classify_id: Set(self.classify_id.clone()),
+            title: Set(self.title.clone()),
+            sort: Set(self.sort),
+        }
+    }
+}

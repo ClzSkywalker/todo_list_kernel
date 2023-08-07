@@ -1,15 +1,16 @@
 use super::preclude::*;
-use chrono::{DateTime, Local};
-use sea_orm::entity::prelude::*;
+use common::DateTimeLocal;
+use sea_orm::{entity::prelude::*, ActiveValue::NotSet, Set};
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Default)]
 #[sea_orm(table_name = "team")]
+#[sea_query::enum_def]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: String,
-    pub created_at: DateTime<Local>,
-    pub updated_at: Option<DateTime<Local>>,
-    pub deleted_at: Option<DateTime<Local>>,
+    pub created_at: Option<DateTimeLocal>,
+    pub updated_at: Option<DateTimeLocal>,
+    pub deleted_at: Option<DateTimeLocal>,
     pub uid: String,
     pub name: String,
     pub description: Option<String>,
@@ -60,3 +61,17 @@ impl Related<super::classify_po::Entity> for Entity {
 }
 
 impl ActiveModelBehavior for ActiveModel {}
+
+impl Model {
+    pub fn into_active_base(&self) -> ActiveModel {
+        ActiveModel {
+            id: Set(self.id.clone()),
+            created_at: NotSet,
+            updated_at: NotSet,
+            deleted_at: NotSet,
+            uid: Set(self.uid.clone()),
+            name: Set(self.name.clone()),
+            description: Set(self.description.clone()),
+        }
+    }
+}
