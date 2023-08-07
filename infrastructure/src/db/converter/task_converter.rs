@@ -7,7 +7,7 @@ use super::super::model::preclude::*;
 
 pub fn deserialize(task: TaskModel, task_content: TaskContentModel) -> Task {
     Task {
-        uuid: task.id,
+        id: task.id,
         uid: task.uid,
         devide_id: task.devide_id,
         parent_id: task.parent_id,
@@ -34,7 +34,7 @@ pub fn serialize(u: Task) -> TaskModel {
         created_at: None,
         updated_at: None,
         deleted_at: None,
-        id: u.uuid,
+        id: u.id,
         uid: u.uid,
         devide_id: u.devide_id,
         content_id: u.task_content.id,

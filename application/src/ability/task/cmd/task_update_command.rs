@@ -27,7 +27,7 @@ impl ICommand for TaskUpdateCommand {}
 impl TaskUpdateCommand {
     pub fn to_task(&self, created_by: String, task_content_id: String) -> Task {
         Task {
-            uuid: self.id.clone(),
+            id: self.id.clone(),
             uid: created_by,
             devide_id: self.devide_id.clone(),
             parent_id: self.parent_id.clone(),

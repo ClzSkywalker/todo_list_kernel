@@ -2,7 +2,7 @@ use base::ddd::repository::IRepository;
 use chrono::Local;
 use common::contextx::AppContext;
 use domain::aggregate::classify::repository::iclassify_repository::IClassifyRepository;
-use sea_orm::{ActiveModelTrait, EntityTrait, QueryFilter, QuerySelect, Set, SelectColumns};
+use sea_orm::{ActiveModelTrait, EntityTrait, QueryFilter, QuerySelect, SelectColumns, Set};
 use sea_query::{Condition, Expr};
 use std::sync::Arc;
 
@@ -114,4 +114,24 @@ impl IRepository for ClassifyRepository {
 }
 
 #[async_trait::async_trait]
-impl IClassifyRepository for ClassifyRepository {}
+impl IClassifyRepository for ClassifyRepository {
+    async fn insert_many(&self, ags: Vec<ClassifyAggregate>) -> anyhow::Result<()> {
+        let c_list: Vec<ClassifyActiveModel> = ags
+            .iter()
+            .map(|item| ClassifySerialize(item.clone()).into())
+            .collect();
+        let active = ClassifyEntity::insert_many(c_list);
+        let res = match &__self.ctx.tx {
+            Some(r) => active.exec(r).await,
+            None => active.exec(&self.ctx.db).await,
+        };
+
+        match res {
+            Ok(_) => Ok(()),
+            Err(e) => {
+                tracing::error!("{},e:{},model:{:?}", self.ctx.to_string(), e, ags);
+                anyhow::bail!(e);
+            }
+        }
+    }
+}
