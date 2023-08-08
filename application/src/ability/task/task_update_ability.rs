@@ -6,17 +6,6 @@ use domain::aggregate::task::{model::task::Task, repository::itask_repository::I
 
 use super::cmd::task_update_command::TaskUpdateCommand;
 
-pub fn new_task_update_ability<T: ITaskRepository<AG = Task, ID = String>>(
-    ctx: Arc<AppContext>,
-    task_repository: T,
-) -> impl IAbility<R = Task, CMD = TaskUpdateCommand> {
-    TaskUpdateAbility {
-        task_repository: task_repository,
-        task_content_id: "".to_string(),
-        ctx: ctx,
-    }
-}
-
 pub struct TaskUpdateAbility<TR>
 where
     TR: ITaskRepository<AG = Task, ID = String>,

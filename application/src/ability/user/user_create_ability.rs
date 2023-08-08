@@ -12,8 +12,8 @@ pub struct UserCreateAbility<US>
 where
     US: IUserDomainService,
 {
-    ctx: Arc<AppContext>,
-    user_service: US,
+    pub ctx: Arc<AppContext>,
+    pub user_service: US,
 }
 
 #[async_trait::async_trait]
@@ -24,12 +24,13 @@ where
     type R = UserAggregate;
     type CMD = UserCreateCommand;
     async fn check_handler(&mut self, cmd: &Self::CMD) -> anyhow::Result<()> {
-        todo!()
+        Ok(())
     }
     async fn check_idempotent(&mut self, cmd: &Self::CMD) -> anyhow::Result<()> {
-        todo!()
+        Ok(())
     }
-    async fn execute(&self, cmd: &Self::CMD) -> anyhow::Result<Self::R> {
+    async fn execute(&self, _: &Self::CMD) -> anyhow::Result<Self::R> {
+        // self.user_service.register()
         todo!()
     }
 }

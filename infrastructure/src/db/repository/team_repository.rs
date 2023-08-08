@@ -11,12 +11,6 @@ use super::super::model::preclude::*;
 use domain::aggregate::preclude::*;
 use sea_orm::prelude::*;
 
-pub fn new_team_repostiory(
-    ctx: Arc<AppContext>,
-) -> impl ITeamRepository<AG = TeamAggregate, ID = String> {
-    TeamRepository { ctx: ctx }
-}
-
 pub struct TeamRepository {
     pub ctx: Arc<AppContext>,
 }

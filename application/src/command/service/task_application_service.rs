@@ -3,31 +3,13 @@ use std::sync::Arc;
 use base::ddd::{ability::IAbility, application_service::IApplicationService};
 use common::contextx::AppContext;
 use domain::aggregate::task::{model::task::Task, repository::itask_repository::ITaskRepository};
-use infrastructure::db::repository::task_repository::{self};
 
 use crate::{
-    ability::task::{
-        cmd::{task_create_command::TaskCreateCommand, task_update_command::TaskUpdateCommand},
-        task_create_ability::{self},
-        task_update_ability,
+    ability::task::cmd::{
+        task_create_command::TaskCreateCommand, task_update_command::TaskUpdateCommand,
     },
     command::itask_application_service::ITaskApplicationService,
 };
-
-pub fn new_task_application_service(ctx: Arc<AppContext>) -> impl ITaskApplicationService {
-    TaskApplicationService {
-        ctx: ctx.clone(),
-        task_create_ability: task_create_ability::new_task_create_ability(
-            ctx.clone(),
-            task_repository::new_task_repostiory(ctx.clone()),
-        ),
-        task_update_ability: task_update_ability::new_task_update_ability(
-            ctx.clone(),
-            task_repository::new_task_repostiory(ctx.clone()),
-        ),
-        task_repository: task_repository::new_task_repostiory(ctx.clone()),
-    }
-}
 
 pub struct TaskApplicationService<CTA, UTA, TR>
 where

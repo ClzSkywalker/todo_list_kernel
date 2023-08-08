@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
-use super::super::super::super::preclude::*;
 use base::ddd::domain_service::IDomainService;
 use common::{contextx::AppContext, errorx::Errorx, i18n::I18nKey};
 
-use crate::aggregate::{
+use domain::aggregate::{
     classify::repository::iclassify_repository::IClassifyRepository,
     devide::repository::idevide_repository::IDevideRepository,
+    preclude::*,
     task::repository::itask_repository::ITaskRepository,
     task_mode::repository::itask_mode_repository::ITaskModeRepository,
     team::repository::item_repository::ITeamRepository,
@@ -58,7 +58,7 @@ where
 {
     async fn register(&self) -> anyhow::Result<UserAggregate> {
         let u = UserAggregate::init_data(self.ctx.clone());
-        let u = match __self.user_repostitory.insert(u).await {
+        let mut u = match __self.user_repostitory.insert(u).await {
             Ok(r) => r,
             Err(_) => {
                 anyhow::bail!(Errorx::new(self.ctx.locale, I18nKey::UserCreate))
@@ -66,12 +66,14 @@ where
         };
 
         let t = TeamAggregate::init_data(self.ctx.clone(), u.id.clone(), u.team_id_port.clone());
-        match __self.team_repository.insert(t).await {
+        match __self.team_repository.insert(t.clone()).await {
             Ok(r) => r,
             Err(_) => {
                 anyhow::bail!(Errorx::new(self.ctx.locale, I18nKey::UserCreate))
             }
         };
+
+        u.team_list[0].name = t.name;
 
         let c =
             ClassifyAggregate::init_data(self.ctx.clone(), u.id.clone(), u.team_id_port.clone());

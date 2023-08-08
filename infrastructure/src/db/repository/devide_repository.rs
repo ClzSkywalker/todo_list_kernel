@@ -11,12 +11,6 @@ use super::super::model::preclude::*;
 use domain::aggregate::preclude::*;
 use sea_orm::prelude::*;
 
-pub fn new_devide_repostiory(
-    ctx: Arc<AppContext>,
-) -> impl IDevideRepository<AG = DevideAggregate, ID = String> {
-    DevideRepository { ctx: ctx }
-}
-
 pub struct DevideRepository {
     pub ctx: Arc<AppContext>,
 }

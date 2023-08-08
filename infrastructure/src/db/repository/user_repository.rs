@@ -78,8 +78,12 @@ impl IRepository for UserRepository {
     }
     async fn by_id(&self, id: Self::ID) -> anyhow::Result<Option<Self::AG>> {
         let active = UserEntity::find_by_id(id.clone())
-            .find_with_related(UserTeamEntity)
-            .filter(Condition::any().add(Expr::col(TaskColumn::DeletedAt).is_null()))
+            .find_with_related(TeamEntity)
+            .filter(
+                Condition::any()
+                    .add(Expr::col(TaskColumn::DeletedAt).is_null())
+                    .add(Expr::col(TeamColumn::DeletedAt).is_null()),
+            )
             .limit(1);
         let res = match &__self.ctx.tx {
             Some(r) => active.all(r).await,

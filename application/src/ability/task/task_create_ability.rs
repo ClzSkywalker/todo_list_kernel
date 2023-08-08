@@ -9,16 +9,6 @@ use domain::aggregate::task::{
 
 use super::cmd::task_create_command::TaskCreateCommand;
 
-pub fn new_task_create_ability<T: ITaskRepository<AG = Task, ID = String>>(
-    ctx: Arc<AppContext>,
-    task_repository: T,
-) -> impl IAbility<R = Task, CMD = TaskCreateCommand> {
-    TaskCreateAbility {
-        task_repository: task_repository,
-        ctx: ctx,
-    }
-}
-
 pub struct TaskCreateAbility<TR>
 where
     TR: ITaskRepository<AG = Task, ID = String>,

@@ -38,7 +38,10 @@ impl User {
                 email: None,
                 phone: None,
                 pwd: String::from(""),
-                team_list: vec![Team { id: tid }],
+                team_list: vec![Team {
+                    id: tid,
+                    name: String::from(""),
+                }],
                 version: VERSION.to_string(),
             },
             Locale::En => Self {
@@ -51,7 +54,10 @@ impl User {
                 email: None,
                 phone: None,
                 pwd: String::from(""),
-                team_list: vec![Team { id: tid }],
+                team_list: vec![Team {
+                    id: tid,
+                    name: String::from(""),
+                }],
                 version: VERSION.to_string(),
             },
         }

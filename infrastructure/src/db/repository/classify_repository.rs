@@ -2,7 +2,7 @@ use base::ddd::repository::IRepository;
 use chrono::Local;
 use common::contextx::AppContext;
 use domain::aggregate::classify::repository::iclassify_repository::IClassifyRepository;
-use sea_orm::{ActiveModelTrait, EntityTrait, QueryFilter, QuerySelect, SelectColumns, Set};
+use sea_orm::{ActiveModelTrait, EntityTrait, QueryFilter, QuerySelect, Set};
 use sea_query::{Condition, Expr};
 use std::sync::Arc;
 
@@ -10,12 +10,6 @@ use super::super::converter::preclude::*;
 use super::super::model::preclude::*;
 use domain::aggregate::preclude::*;
 use sea_orm::prelude::*;
-
-pub fn new_classify_repostiory(
-    ctx: Arc<AppContext>,
-) -> impl IClassifyRepository<AG = ClassifyAggregate, ID = String> {
-    ClassifyRepository { ctx: ctx }
-}
 
 pub struct ClassifyRepository {
     pub ctx: Arc<AppContext>,

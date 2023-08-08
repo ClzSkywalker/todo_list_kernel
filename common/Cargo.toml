@@ -30,3 +30,5 @@ rusty_ulid = { wrokspace = true }
 once_cell = { wrokspace = true }
 axum = { workspace = true }
 serde = { workspace = true }
+anyhow = { workspace = true }
+jsonwebtoken = { workspace = true }

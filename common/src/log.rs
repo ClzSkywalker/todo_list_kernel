@@ -1,8 +1,7 @@
-use std::io;
-
 use chrono::Local;
 
 use tracing::Level;
+use tracing_appender::non_blocking::WorkerGuard;
 use tracing_appender::rolling;
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 use tracing_subscriber::fmt::{self, time::FormatTime};
@@ -25,28 +24,26 @@ impl FormatTime for MyTimeFormat {
  * @param           {*} path
  * @return          {*}
  */
-pub fn init_log(path: &str) {
+pub fn init_log(path: &str) -> WorkerGuard {
     let err_file = rolling::daily(path, "error").with_max_level(Level::ERROR);
 
     let info_file = rolling::daily(path, "info")
-        .with_max_level(Level::INFO)
+        .with_max_level(Level::WARN)
         .with_min_level(Level::INFO);
-    // let (non_blocking, _guard) = tracing_appender::non_blocking(std::io::stdout());
-
-    // let console_filter =
-    //     EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
+    let (non_blocking, guard) = tracing_appender::non_blocking(std::io::stdout());
+    let non_blocking = non_blocking
+        .with_min_level(Level::ERROR)
+        .with_max_level(Level::DEBUG);
 
     let subscriber = tracing_subscriber::registry()
-        // .with(EnvFilter::from_default_env().add_directive(tracing::Level::TRACE.into()))
-        // todo 控制台日志等级过滤
         .with(
             fmt::Layer::new()
                 .with_timer(MyTimeFormat)
                 .with_line_number(true)
                 .with_test_writer()
-                // .with_filter(filter)
-                // .with_filter(filter::LevelFilter::DEBUG)
-                .with_writer(io::stdout),
+                .with_line_number(true)
+                // .json()
+                .with_writer(non_blocking),
         )
         .with(
             fmt::Layer::new()
@@ -65,5 +62,5 @@ pub fn init_log(path: &str) {
                 .with_writer(err_file),
         );
     tracing::subscriber::set_global_default(subscriber).expect("Unable to set a global collector");
-    ()
+    guard
 }

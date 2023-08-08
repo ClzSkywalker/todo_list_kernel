@@ -9,7 +9,7 @@ const LOCAL_HOSE: &str = "0.0.0.0";
 pub async fn server_api(config: AppConfig) {
     APP_CONFIG.get_or_init(|| config.clone());
 
-    common::log::init_log(&config.log_path);
+    let _guard = common::log::init_log(&config.log_path);
     tracing::info!("api server srart:{}:{}", LOCAL_HOSE, config.port.clone());
     tracing::info!(
         "port:{} \ndb:{} \nlog:{}",

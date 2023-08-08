@@ -10,12 +10,6 @@ use super::super::converter::preclude::*;
 use super::super::model::preclude::*;
 use domain::aggregate::preclude::*;
 
-pub fn new_task_repostiory(
-    ctx: Arc<AppContext>,
-) -> impl ITaskRepository<AG = TaskAggregate, ID = String> {
-    TaskRepository { ctx: ctx }
-}
-
 pub struct TaskRepository {
     pub ctx: Arc<AppContext>,
 }

@@ -12,12 +12,6 @@ use super::super::model::preclude::*;
 use domain::aggregate::preclude::*;
 use sea_orm::prelude::*;
 
-pub fn new_tasl_mode_repostiory(
-    ctx: Arc<AppContext>,
-) -> impl ITaskModeRepository<AG = TaskModeAggregate, ID = String> {
-    TaskModeRepository { ctx: ctx }
-}
-
 pub struct TaskModeRepository {
     pub ctx: Arc<AppContext>,
 }

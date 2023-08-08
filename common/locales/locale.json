@@ -30,6 +30,18 @@
     "zh": "数据库初始化失败"
   },
   {
+    "id": 102001,
+    "key": "TokenExpire",
+    "en": "token expiration",
+    "zh": "token过期"
+  },
+  {
+    "id": 102002,
+    "key": "TokenInvalid",
+    "en": "Invalid token",
+    "zh": "token无效"
+  },
+  {
     "id": 201001,
     "key": "UserCreate",
     "en": "User creation failure",
