@@ -1,8 +1,7 @@
-use axum::{middleware, Extension, Router};
-use common::contextx::AppContext;
-use infrastructure::db::model::common::GLOBAL_DB;
+use axum::{middleware, Router};
+use middlewarex::jwt;
 
-use crate::handle::{unauth_api, auth_api};
+use crate::handle::{auth_api, unauth_api};
 
 pub fn create_router() -> Router {
     Router::new().nest("/api/v1", global_router())
@@ -20,9 +19,10 @@ fn set_unauth_middleware(router: Router) -> Router {
 
 fn set_auth_middleware(router: Router) -> Router {
     router
+        .layer(middleware::from_fn(jwt::auth))
         .layer(middleware::from_fn(middlewarex::ctx::ctx_fn_mid))
-        .layer(Extension(AppContext::new(
-            GLOBAL_DB.get().unwrap().clone(),
-            common::i18n::Locale::En,
-        )))
+    // .layer(Extension(AppContext::new(
+    //     GLOBAL_DB.get().unwrap().clone(),
+    //     common::i18n::Locale::En,
+    // )))
 }

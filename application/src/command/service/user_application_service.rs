@@ -1,28 +1,39 @@
 use std::sync::Arc;
 
 use crate::{
+    ability::user::cmd::user_update_command::UserUpdateCommand,
     command::iuser_application_service::IUserApplicationService,
     query::model::common::dto::RespToken,
 };
-use base::ddd::application_service::IApplicationService;
+use base::ddd::{ability::IAbility, application_service::IApplicationService};
 use chrono::Local;
 use common::{contextx::AppContext, jwt};
-use domain::aggregate::user::service::iuser_domain_service::IUserDomainService;
+use domain::aggregate::{
+    preclude::UserAggregate, user::service::iuser_domain_service::IUserDomainService,
+};
 
-pub struct UserApplicationService<US>
+pub struct UserApplicationService<US, UUA>
 where
     US: IUserDomainService,
+    UUA: IAbility<R = UserAggregate, CMD = UserUpdateCommand>,
 {
     pub ctx: Arc<AppContext>,
     pub user_service: US,
+    pub user_update_ability: UUA,
 }
 
-impl<US> IApplicationService for UserApplicationService<US> where US: IUserDomainService {}
-
-#[async_trait::async_trait]
-impl<US> IUserApplicationService for UserApplicationService<US>
+impl<US, UUA> IApplicationService for UserApplicationService<US, UUA>
 where
     US: IUserDomainService,
+    UUA: IAbility<R = UserAggregate, CMD = UserUpdateCommand>,
+{
+}
+
+#[async_trait::async_trait]
+impl<US, UUA> IUserApplicationService for UserApplicationService<US, UUA>
+where
+    US: IUserDomainService,
+    UUA: IAbility<R = UserAggregate, CMD = UserUpdateCommand>,
 {
     async fn create_by_id(&mut self) -> anyhow::Result<RespToken> {
         let u = match __self.user_service.register().await {
@@ -43,5 +54,14 @@ where
             token: token,
             expires_in: Local::now().timestamp() + jwt::EXP as i64,
         })
+    }
+
+    async fn update(&mut self, cmd: &UserUpdateCommand) -> anyhow::Result<()> {
+        match __self.user_update_ability.execute_ability(cmd).await {
+            Ok(_) => Ok(()),
+            Err(e) => {
+                anyhow::bail!(e)
+            }
+        }
     }
 }

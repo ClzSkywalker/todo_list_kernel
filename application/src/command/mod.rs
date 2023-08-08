@@ -3,7 +3,10 @@ use std::sync::Arc;
 use common::contextx::AppContext;
 use infrastructure::{db::repository::new_task_repostiory, service::new_user_domain_service};
 
-use crate::ability::task::{new_task_create_ability, new_task_update_ability};
+use crate::ability::{
+    new_user_update_ability,
+    task::{new_task_create_ability, new_task_update_ability},
+};
 
 use self::{
     itask_application_service::ITaskApplicationService,
@@ -31,5 +34,6 @@ pub fn new_user_application_service(ctx: Arc<AppContext>) -> impl IUserApplicati
     UserApplicationService {
         ctx: ctx.clone(),
         user_service: new_user_domain_service(ctx.clone()),
+        user_update_ability: new_user_update_ability(ctx.clone()),
     }
 }

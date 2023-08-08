@@ -68,6 +68,14 @@ where
 }
 
 impl<T: Serialize> Responsex<T> {
+    pub fn ok(locale: Locale) -> Self {
+        Self {
+            code: I18nKey::Ok.id(),
+            msg: I18nKey::Ok.trans(locale),
+            data: None,
+        }
+    }
+
     #[allow(dead_code)]
     pub fn ok_with_msg(msg: String) -> Self {
         Self {
@@ -109,6 +117,6 @@ where
 {
     match e.downcast_ref::<Errorx>() {
         Some(my_error) => my_error.clone().into(),
-        None => Responsex::err_with_req(locale)
+        None => Responsex::err_with_req(locale),
     }
 }

@@ -16,7 +16,9 @@ pub fn unauth_api() -> Router {
 }
 
 pub fn auth_api() -> Router {
-    Router::new().nest("/task", task_api())
+    Router::new()
+        .nest("/task", task_api())
+        .nest("/user", user_api())
 }
 
 fn task_api() -> Router {
@@ -24,4 +26,8 @@ fn task_api() -> Router {
         .route("/", post(task::task_create))
         .route("/:id", put(task::task_update))
         .route("/:id", delete(task::task_delete))
+}
+
+fn user_api() -> Router {
+    Router::new().route("/", put(user::user_update))
 }

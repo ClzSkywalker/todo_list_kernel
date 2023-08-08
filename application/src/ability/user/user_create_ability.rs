@@ -23,10 +23,10 @@ where
 {
     type R = UserAggregate;
     type CMD = UserCreateCommand;
-    async fn check_handler(&mut self, cmd: &Self::CMD) -> anyhow::Result<()> {
+    async fn check_handler(&mut self, _: &Self::CMD) -> anyhow::Result<()> {
         Ok(())
     }
-    async fn check_idempotent(&mut self, cmd: &Self::CMD) -> anyhow::Result<()> {
+    async fn check_idempotent(&mut self, _: &Self::CMD) -> anyhow::Result<()> {
         Ok(())
     }
     async fn execute(&self, _: &Self::CMD) -> anyhow::Result<Self::R> {

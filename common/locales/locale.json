@@ -48,6 +48,18 @@
     "zh": "用户创建失败"
   },
   {
+    "id": 201002,
+    "key": "UserNotfound",
+    "en": "User not found",
+    "zh": "用户未找到"
+  },
+  {
+    "id": 201003,
+    "key": "UserUpdate",
+    "en": "User update failure",
+    "zh": "用户更新失败"
+  },
+  {
     "id": 202001,
     "key": "TaskNotFound",
     "en": "Task not found",
