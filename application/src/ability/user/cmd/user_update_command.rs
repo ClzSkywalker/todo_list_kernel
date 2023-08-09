@@ -3,7 +3,7 @@ use common::config::VERSION;
 use domain::aggregate::preclude::*;
 use serde::Deserialize;
 
-use crate::query::model::user::dto::cud::UserUpdateReq;
+use crate::command::model::user::UserUpdateReq;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct UserUpdateCommand {

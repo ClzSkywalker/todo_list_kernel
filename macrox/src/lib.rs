@@ -1,6 +1,5 @@
 extern crate proc_macro;
-
-use std::fs;
+use std::{collections::HashSet, fs};
 
 use proc_macro2::TokenStream;
 // format_ident
@@ -8,30 +7,15 @@ use quote::quote;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
-// #[proc_macro_attribute]
-// pub fn show_streams(attr: TokenStream, item: TokenStream) -> TokenStream {
-//     println!("attr: \"{}\"", attr.to_string());
-//     println!("item: \"{}\"", item.to_string());
-//     item
-// }
-
-#[derive(Debug, Deserialize, Serialize)]
-struct EnumDefinition {
-    pub id: i32,
-    pub key: String,
-    pub zh: String,
-    pub en: String,
-}
-
 #[proc_macro]
 pub fn generate_i18n_enum(_input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    // let local_path = input.to_string();
     let cargo_dir = std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR is empty");
     let current_dir = std::path::PathBuf::from(cargo_dir);
     let locales_path = current_dir.join("locales/locale.json");
 
     let json_data = fs::read_to_string(locales_path.as_path().to_str().unwrap()).unwrap();
     let str_list: Vec<EnumDefinition> = serde_json::from_str(&json_data).unwrap();
+    check_json_data(&str_list);
     // 如果返回的结构中带()这种特殊符号，会自动加上"，恶心
     // 获取 key
     let enum_case = generate_enum_case(&str_list);
@@ -85,6 +69,34 @@ pub fn generate_i18n_enum(_input: proc_macro::TokenStream) -> proc_macro::TokenS
         }
     };
     code.into()
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct EnumDefinition {
+    pub id: i32,
+    pub key: String,
+    pub zh: String,
+    pub en: String,
+}
+
+fn check_json_data(data_list: &Vec<EnumDefinition>) {
+    let mut id_map: HashSet<i32> = HashSet::new();
+    let mut key_map: HashSet<String> = HashSet::new();
+
+    for item in data_list {
+        match id_map.get(&item.id) {
+            Some(r) => {
+                panic!("id already exists:{}", r)
+            }
+            None => id_map.insert(item.id),
+        };
+        match key_map.get(&item.key.clone()) {
+            Some(r) => {
+                panic!("i18nkey already exists:{}", r.clone())
+            }
+            None => key_map.insert(item.key.clone()),
+        };
+    }
 }
 
 ///

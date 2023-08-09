@@ -6,7 +6,7 @@ use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, 
 
 use crate::{errorx::Errorx, i18n::Locale};
 
-pub const TOKEN_TYPE: &str = "bearer";
+pub const TOKEN_TYPE: &str = "Bearer";
 pub const EXP: usize = 7 * 86400;
 const SUB: &str = "1045683477@qq.com";
 const COMPANY: &str = "1045683477@qq.com";

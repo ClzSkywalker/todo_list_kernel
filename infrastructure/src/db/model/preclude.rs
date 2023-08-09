@@ -1,7 +1,7 @@
 pub use super::super::model::{
     classify_po::{
         ActiveModel as ClassifyActiveModel, Column as ClassifyColumn, Entity as ClassifyEntity,
-        Model as ClassifyModel, ModelIden as ClassifyIden, ModelIden as DevideIden,
+        Model as ClassifyModel,
     },
     devide_po::{
         ActiveModel as DevideActiveModel, Column as DevideColumn, Entity as DevideEntity,
@@ -21,11 +21,11 @@ pub use super::super::model::{
     },
     team_po::{
         ActiveModel as TeamActiveModel, Column as TeamColumn, Entity as TeamEntity,
-        Model as TeamModel, Relation as TeamRelation,
+        Model as TeamModel, ModelIden as TeamIden, Relation as TeamRelation,
     },
     user_po::{
         ActiveModel as UserActiveModel, Column as UserColumn, Entity as UserEntity,
-        Model as UserModel, ModelIden as UserIden, Relation as UserRelation,
+        Model as UserModel, Relation as UserRelation,
     },
     user_to_team_po::{
         ActiveModel as UserTeamActiveModel, Column as UserTeamColumn, Entity as UserTeamEntity,

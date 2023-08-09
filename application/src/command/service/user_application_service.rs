@@ -2,17 +2,17 @@ use std::sync::Arc;
 
 use crate::{
     ability::user::cmd::user_update_command::UserUpdateCommand,
-    command::iuser_application_service::IUserApplicationService,
+    command::iuser_application_service::IUserCmdApplicationService,
     query::model::common::dto::RespToken,
 };
 use base::ddd::{ability::IAbility, application_service::IApplicationService};
 use chrono::Local;
-use common::{contextx::AppContext, jwt};
+use common::{contextx::AppContext, errorx::Errorx, jwt};
 use domain::aggregate::{
     preclude::UserAggregate, user::service::iuser_domain_service::IUserDomainService,
 };
 
-pub struct UserApplicationService<US, UUA>
+pub struct UserCmdApplicationService<US, UUA>
 where
     US: IUserDomainService,
     UUA: IAbility<R = UserAggregate, CMD = UserUpdateCommand>,
@@ -22,7 +22,7 @@ where
     pub user_update_ability: UUA,
 }
 
-impl<US, UUA> IApplicationService for UserApplicationService<US, UUA>
+impl<US, UUA> IApplicationService for UserCmdApplicationService<US, UUA>
 where
     US: IUserDomainService,
     UUA: IAbility<R = UserAggregate, CMD = UserUpdateCommand>,
@@ -30,7 +30,7 @@ where
 }
 
 #[async_trait::async_trait]
-impl<US, UUA> IUserApplicationService for UserApplicationService<US, UUA>
+impl<US, UUA> IUserCmdApplicationService for UserCmdApplicationService<US, UUA>
 where
     US: IUserDomainService,
     UUA: IAbility<R = UserAggregate, CMD = UserUpdateCommand>,
@@ -44,8 +44,11 @@ where
         };
         let token = match jwt::generate_token(u.id, u.team_id_port) {
             Ok(r) => r,
-            Err(e) => {
-                anyhow::bail!(e)
+            Err(_) => {
+                anyhow::bail!(Errorx::new(
+                    self.ctx.locale,
+                    common::i18n::I18nKey::EncryptionError
+                ))
             }
         };
 

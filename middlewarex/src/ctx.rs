@@ -12,19 +12,27 @@ pub const HEADER_LANGUAGE: &str = "Accept-Language";
 
 pub async fn ctx_fn_mid(req: Request<Body>, next: Next<Body>) -> impl IntoResponse {
     // req.extensions_mut().
+    // let locale = match req.headers().get(HEADER_LANGUAGE) {
+    //     Some(r) => {
+    //         let l = r
+    //             .to_str()
+    //             .unwrap_or("")
+    //             .split("\r\n")
+    //             .nth(0)
+    //             .unwrap_or("")
+    //             .to_owned();
+    //         Locale::from(l.as_str())
+    //     }
+    //     None => Locale::En,
+    // };
+
     let locale = match req.headers().get(HEADER_LANGUAGE) {
-        Some(r) => {
-            let l = r
-                .to_str()
-                .unwrap_or("")
-                .split("\r\n")
-                .nth(0)
-                .unwrap_or("")
-                .to_owned();
-            Locale::from(l.as_str())
-        }
-        None => Locale::En,
+        Some(r) => r.to_str().unwrap().to_string(),
+        None => Locale::En.to_string(),
     };
+
+    let locale = Locale::from(locale.as_str());
+
     let db = GLOBAL_DB.get().unwrap();
     let ctx = AppContext::new(db.clone(), locale);
 
@@ -38,8 +46,7 @@ pub async fn ctx_fn_mid(req: Request<Body>, next: Next<Body>) -> impl IntoRespon
     let mut req = Request::from_parts(parts, Body::from(bytes));
 
     req.extensions_mut().insert(ctx);
-    let res = next.run(req).await;
-    Ok(res)
+    Ok(next.run(req).await)
 }
 
 async fn get_body_data<B>(body: B) -> Result<(Bytes, String), (StatusCode, String)>

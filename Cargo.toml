@@ -79,3 +79,5 @@ jsonwebtoken = "8"
 regex = "1"
 # 参数校验
 validator = { version = "0.16", features = ["derive"] }
+# 加密库
+bcrypt = "0.15"

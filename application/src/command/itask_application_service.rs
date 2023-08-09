@@ -4,7 +4,7 @@ use domain::aggregate::task::model::task::Task;
 use crate::ability::task::cmd::task_create_command::TaskCreateCommand;
 
 #[async_trait::async_trait]
-pub trait ITaskApplicationService: IApplicationService {
+pub trait ITaskCmdApplicationService: IApplicationService {
     ///
     /// Author         : ClzSkywalker
     /// Date           : 2023-08-01

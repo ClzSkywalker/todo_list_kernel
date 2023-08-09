@@ -4,7 +4,6 @@ use sea_orm::{entity::prelude::*, ActiveValue::NotSet, Set};
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Default)]
 #[sea_orm(table_name = "classify")]
-#[sea_query::enum_def]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: String,

@@ -9,20 +9,21 @@ use crate::ability::{
 };
 
 use self::{
-    itask_application_service::ITaskApplicationService,
-    iuser_application_service::IUserApplicationService,
+    itask_application_service::ITaskCmdApplicationService,
+    iuser_application_service::IUserCmdApplicationService,
     service::{
-        task_application_service::TaskApplicationService,
-        user_application_service::UserApplicationService,
+        task_application_service::TaskCmdApplicationService,
+        user_application_service::UserCmdApplicationService,
     },
 };
 
 pub mod itask_application_service;
 pub mod iuser_application_service;
+pub mod model;
 pub mod service;
 
-pub fn new_task_application_service(ctx: Arc<AppContext>) -> impl ITaskApplicationService {
-    TaskApplicationService {
+pub fn new_task_cmd_application_service(ctx: Arc<AppContext>) -> impl ITaskCmdApplicationService {
+    TaskCmdApplicationService {
         ctx: ctx.clone(),
         task_create_ability: new_task_create_ability(ctx.clone(), new_task_repostiory(ctx.clone())),
         task_update_ability: new_task_update_ability(ctx.clone(), new_task_repostiory(ctx.clone())),
@@ -30,8 +31,8 @@ pub fn new_task_application_service(ctx: Arc<AppContext>) -> impl ITaskApplicati
     }
 }
 
-pub fn new_user_application_service(ctx: Arc<AppContext>) -> impl IUserApplicationService {
-    UserApplicationService {
+pub fn new_user_cmd_application_service(ctx: Arc<AppContext>) -> impl IUserCmdApplicationService {
+    UserCmdApplicationService {
         ctx: ctx.clone(),
         user_service: new_user_domain_service(ctx.clone()),
         user_update_ability: new_user_update_ability(ctx.clone()),

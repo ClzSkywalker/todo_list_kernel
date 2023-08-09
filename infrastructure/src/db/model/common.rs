@@ -24,6 +24,7 @@ pub async fn init_db(
     opt.max_connections(1000)
         .min_connections(1)
         .connect_timeout(Duration::from_secs(8))
+        .sqlx_logging_level(tracing::log::LevelFilter::Info)
         .sqlx_logging(true);
 
     let db: sea_orm::DatabaseConnection = match Database::connect(opt).await {

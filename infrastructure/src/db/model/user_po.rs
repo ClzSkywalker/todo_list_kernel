@@ -1,12 +1,10 @@
 use domain::share::value_object::user_type::{MemberType, RegisterType};
 use sea_orm::{entity::prelude::*, ActiveValue::NotSet, Set};
-use sea_query::enum_def;
 
 use super::preclude::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Default)]
 #[sea_orm(table_name = "user")]
-#[enum_def]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: String,
@@ -23,6 +21,12 @@ pub struct Model {
     pub pwd: String,
     pub version: String,
 }
+
+// impl EntityName for Model {
+//     fn table_name(&self) -> &str {
+//         "user"
+//     }
+// }
 
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {

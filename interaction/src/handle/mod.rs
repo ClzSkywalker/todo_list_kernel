@@ -5,7 +5,6 @@ use axum::{
 };
 
 pub mod config;
-pub mod res;
 pub mod task;
 pub mod user;
 
@@ -13,6 +12,7 @@ pub fn unauth_api() -> Router {
     Router::new()
         .route("/config", get(get_config))
         .route("/register", post(user::user_create))
+        .route("/login/email", post(user::user_login_email))
 }
 
 pub fn auth_api() -> Router {

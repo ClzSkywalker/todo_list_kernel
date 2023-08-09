@@ -8,10 +8,10 @@ use crate::{
     ability::task::cmd::{
         task_create_command::TaskCreateCommand, task_update_command::TaskUpdateCommand,
     },
-    command::itask_application_service::ITaskApplicationService,
+    command::itask_application_service::ITaskCmdApplicationService,
 };
 
-pub struct TaskApplicationService<CTA, UTA, TR>
+pub struct TaskCmdApplicationService<CTA, UTA, TR>
 where
     CTA: IAbility<R = Task, CMD = TaskCreateCommand>,
     UTA: IAbility<R = Task, CMD = TaskUpdateCommand>,
@@ -23,7 +23,7 @@ where
     pub task_repository: TR,
 }
 
-impl<CTA, UTA, TR> TaskApplicationService<CTA, UTA, TR>
+impl<CTA, UTA, TR> TaskCmdApplicationService<CTA, UTA, TR>
 where
     CTA: IAbility<R = Task, CMD = TaskCreateCommand>,
     UTA: IAbility<R = Task, CMD = TaskUpdateCommand>,
@@ -31,7 +31,7 @@ where
 {
 }
 
-impl<CTA, UTA, TR> IApplicationService for TaskApplicationService<CTA, UTA, TR>
+impl<CTA, UTA, TR> IApplicationService for TaskCmdApplicationService<CTA, UTA, TR>
 where
     CTA: IAbility<R = Task, CMD = TaskCreateCommand>,
     UTA: IAbility<R = Task, CMD = TaskUpdateCommand>,
@@ -40,7 +40,7 @@ where
 }
 
 #[async_trait::async_trait]
-impl<CTA, UTA, TR> ITaskApplicationService for TaskApplicationService<CTA, UTA, TR>
+impl<CTA, UTA, TR> ITaskCmdApplicationService for TaskCmdApplicationService<CTA, UTA, TR>
 where
     CTA: IAbility<R = Task, CMD = TaskCreateCommand>,
     UTA: IAbility<R = Task, CMD = TaskUpdateCommand>,

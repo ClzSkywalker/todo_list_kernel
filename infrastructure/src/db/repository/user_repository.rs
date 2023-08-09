@@ -81,8 +81,8 @@ impl IRepository for UserRepository {
             .find_with_related(TeamEntity)
             .filter(
                 Condition::any()
-                    .add(Expr::col(TaskColumn::DeletedAt).is_null())
-                    .add(Expr::col(TeamColumn::DeletedAt).is_null()),
+                    .add(Expr::col((UserEntity, TaskColumn::DeletedAt)).is_null())
+                    .add(Expr::col((TeamEntity, TeamColumn::DeletedAt)).is_null()),
             )
             .limit(1);
         let res = match &__self.ctx.tx {
@@ -106,4 +106,35 @@ impl IRepository for UserRepository {
     }
 }
 
-impl IUserRepository for UserRepository {}
+#[async_trait::async_trait]
+impl IUserRepository for UserRepository {
+    async fn find_by_email(&self, email: String) -> anyhow::Result<Option<UserAggregate>> {
+        let active = UserEntity::find()
+            .find_with_related(TeamEntity)
+            .filter(
+                Condition::any()
+                    .add(Expr::col((UserEntity, UserColumn::Email)).eq(email.clone()))
+                    .add(Expr::col((UserEntity, TaskColumn::DeletedAt)).is_null())
+                    .add(Expr::col((TeamEntity, TeamColumn::DeletedAt)).is_null()),
+            )
+            .limit(1);
+        let res = match &self.ctx.tx {
+            Some(r) => active.all(r).await,
+            None => active.all(&self.ctx.db).await,
+        };
+        let res = match res {
+            Ok(r) => r,
+            Err(e) => {
+                tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, email);
+                anyhow::bail!(e)
+            }
+        };
+
+        let res = match res.last() {
+            Some(r) => r.clone(),
+            None => return Ok(None),
+        };
+
+        Ok(Some(user_converter::deserialize(res.0, res.1)))
+    }
+}

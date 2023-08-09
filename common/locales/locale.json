@@ -30,6 +30,12 @@
     "zh": "数据库初始化失败"
   },
   {
+    "id": 101003,
+    "key": "EncryptionError",
+    "en": "Encryption error",
+    "zh": "加密错误"
+  },
+  {
     "id": 102001,
     "key": "TokenExpire",
     "en": "token expiration",
@@ -58,6 +64,12 @@
     "key": "UserUpdate",
     "en": "User update failure",
     "zh": "用户更新失败"
+  },
+  {
+    "id": 201004,
+    "key": "UserLogin",
+    "en": "The user account or password is incorrect",
+    "zh": "用户账号或密码错误"
   },
   {
     "id": 202001,

@@ -28,8 +28,9 @@ pub fn init_log(path: &str) -> WorkerGuard {
     let err_file = rolling::daily(path, "error").with_max_level(Level::ERROR);
 
     let info_file = rolling::daily(path, "info")
-        .with_max_level(Level::WARN)
-        .with_min_level(Level::INFO);
+        .with_min_level(Level::WARN)
+        .with_max_level(Level::INFO);
+
     let (non_blocking, guard) = tracing_appender::non_blocking(std::io::stdout());
     let non_blocking = non_blocking
         .with_min_level(Level::ERROR)
