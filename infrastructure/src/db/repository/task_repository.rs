@@ -36,6 +36,23 @@ impl IRepository for TaskRepository {
                 anyhow::bail!(e);
             }
         };
+
+        let mut m = TaskContentSerialize(s.task_content.clone());
+        m.created_at = Some(Local::now());
+        let am: TaskContentActiveModel = m.clone().into();
+        let res = match &self.ctx.tx {
+            Some(r) => am.insert(r).await,
+            None => am.insert(&self.ctx.db).await,
+        };
+
+        match res {
+            Ok(_) => {}
+            Err(e) => {
+                tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, s.task_content.clone());
+                anyhow::bail!(e);
+            }
+        };
+
         Ok(s)
     }
 
@@ -51,11 +68,32 @@ impl IRepository for TaskRepository {
             None => active.exec(&self.ctx.db).await,
         };
 
-        match res {
-            Ok(_) => Ok(()),
+        let task = match res {
+            Ok(r) => r,
             Err(e) => {
                 tracing::error!("{},e:{},model:{:?}", self.ctx.to_string(), e, id);
                 anyhow::bail!(e);
+            }
+        };
+
+        let m = TaskContentActiveModel {
+            id: Set(task.content_id.clone()),
+            updated_at: Set(Some(Local::now())),
+            ..Default::default()
+        };
+        let active = TaskContentEntity::update(m)
+            .filter(Condition::any().add(Expr::col(TaskColumn::DeletedAt).is_null()));
+
+        let r = match &self.ctx.tx {
+            Some(r) => active.exec(r).await,
+            None => active.exec(&self.ctx.db).await,
+        };
+
+        match r {
+            Ok(_) => Ok(()),
+            Err(e) => {
+                tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, task.content_id.clone());
+                anyhow::bail!(e)
             }
         }
     }
@@ -74,10 +112,26 @@ impl IRepository for TaskRepository {
         };
 
         match res {
-            Ok(_) => Ok(()),
+            Ok(_) => {}
             Err(e) => {
                 tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, ag);
                 anyhow::bail!(e)
+            }
+        };
+
+        let mut m = TaskContentSerialize(ag.task_content.clone());
+        m.updated_at = Some(Local::now());
+        let mut active: TaskContentActiveModel = m.into();
+        active.not_set(TaskContentColumn::CreatedAt);
+        let res = match &self.ctx.tx {
+            Some(r) => active.update(r).await,
+            None => active.update(&self.ctx.db).await,
+        };
+        match res {
+            Ok(_) => Ok(()),
+            Err(e) => {
+                tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, ag.task_content.clone());
+                anyhow::bail!(e);
             }
         }
     }
@@ -102,13 +156,23 @@ impl IRepository for TaskRepository {
             None => return Ok(None),
         };
 
-        let content = match __self.content_first_by_id(task.content_id.clone()).await {
+        let active = TaskContentEntity::find_by_id(task.content_id.clone());
+        let res = match &self.ctx.tx {
+            Some(r) => active.one(r).await,
+            None => active.one(&self.ctx.db).await,
+        };
+        // let res = active.one(&self.ctx.db);
+        let content = match res {
             Ok(r) => match r {
-                Some(r) => r,
+                Some(r) => {
+                    let r = TaskContentDeserialize(r);
+                    r
+                }
                 None => return Ok(None),
             },
             Err(e) => {
-                anyhow::bail!(e)
+                tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, id);
+                anyhow::bail!(e);
             }
         };
 
@@ -118,87 +182,4 @@ impl IRepository for TaskRepository {
 }
 
 #[async_trait::async_trait]
-impl ITaskRepository for TaskRepository {
-    async fn content_insert(&self, tc: TaskContentDomainEntity) -> anyhow::Result<()> {
-        let mut m = TaskContentSerialize(tc.clone());
-        m.created_at = Some(Local::now());
-        let am: TaskContentActiveModel = m.clone().into();
-        let res = match &self.ctx.tx {
-            Some(r) => am.insert(r).await,
-            None => am.insert(&self.ctx.db).await,
-        };
-        match res {
-            Ok(_) => Ok(()),
-            Err(e) => {
-                tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, tc);
-                anyhow::bail!(e);
-            }
-        }
-    }
-
-    async fn content_delete(&self, id: String) -> anyhow::Result<()> {
-        let m = TaskContentActiveModel {
-            id: Set(id.clone()),
-            updated_at: Set(Some(Local::now())),
-            ..Default::default()
-        };
-        let active = TaskContentEntity::update(m)
-            .filter(Condition::any().add(Expr::col(TaskColumn::DeletedAt).is_null()));
-
-        let r = match &self.ctx.tx {
-            Some(r) => active.exec(r).await,
-            None => active.exec(&self.ctx.db).await,
-        };
-
-        match r {
-            Ok(_) => Ok(()),
-            Err(e) => {
-                tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, id);
-                anyhow::bail!(e)
-            }
-        }
-    }
-
-    async fn content_update(&self, tc: TaskContentDomainEntity) -> anyhow::Result<()> {
-        let mut m = TaskContentSerialize(tc.clone());
-        m.updated_at = Some(Local::now());
-        let mut active: TaskContentActiveModel = m.into();
-        active.not_set(TaskContentColumn::CreatedAt);
-        let res = match &self.ctx.tx {
-            Some(r) => active.update(r).await,
-            None => active.update(&self.ctx.db).await,
-        };
-        match res {
-            Ok(_) => Ok(()),
-            Err(e) => {
-                tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, tc);
-                anyhow::bail!(e);
-            }
-        }
-    }
-
-    async fn content_first_by_id(
-        &self,
-        id: String,
-    ) -> anyhow::Result<Option<TaskContentDomainEntity>> {
-        let active = TaskContentEntity::find_by_id(id.clone());
-        let res = match &self.ctx.tx {
-            Some(r) => active.one(r).await,
-            None => active.one(&self.ctx.db).await,
-        };
-        // let res = active.one(&self.ctx.db);
-        match res {
-            Ok(r) => match r {
-                Some(r) => {
-                    let r = TaskContentDeserialize(r);
-                    Ok(Some(r))
-                }
-                None => Ok(None),
-            },
-            Err(e) => {
-                tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, id);
-                anyhow::bail!(e);
-            }
-        }
-    }
-}
+impl ITaskRepository for TaskRepository {}

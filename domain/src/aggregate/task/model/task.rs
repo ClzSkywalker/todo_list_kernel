@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use base::ddd::aggregate::IAggregate;
-use common::contextx::AppContext;
+use common::{contextx::AppContext, utils};
 use serde::Serialize;
 
 use crate::share::value_object::task_date::TaskDate;
@@ -41,5 +41,14 @@ impl Task {
                 content: "".to_string(),
             },
         }
+    }
+
+    pub fn new_task_content(&mut self, content: String) {
+        let tc_ulid = utils::generate_ulid();
+        let tc = TaskContent {
+            id: tc_ulid.clone(),
+            content: content,
+        };
+        self.task_content = tc;
     }
 }

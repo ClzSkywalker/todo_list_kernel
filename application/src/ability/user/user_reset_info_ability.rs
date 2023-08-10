@@ -6,9 +6,9 @@ use domain::aggregate::{
     preclude::UserAggregate, user::repository::iuser_repository::IUserRepository,
 };
 
-use super::cmd::user_update_cmd::UserUpdateCmd;
+use super::cmd::user_reset_info_cmd::UserResetInfoCmd;
 
-pub struct UserUpdateAbility<UR>
+pub struct UserResetInfoAbility<UR>
 where
     UR: IUserRepository,
 {
@@ -18,12 +18,12 @@ where
 }
 
 #[async_trait::async_trait]
-impl<UR> IAbility for UserUpdateAbility<UR>
+impl<UR> IAbility for UserResetInfoAbility<UR>
 where
     UR: IUserRepository,
 {
     type R = UserAggregate;
-    type CMD = UserUpdateCmd;
+    type CMD = UserResetInfoCmd;
     async fn check_handler(&mut self, cmd: &Self::CMD) -> anyhow::Result<()> {
         let u = match __self.user_repository.by_id(cmd.id.clone()).await {
             Ok(r) => match r {
@@ -41,11 +41,16 @@ where
     }
 
     async fn check_idempotent(&mut self, _: &Self::CMD) -> anyhow::Result<()> {
+        let u = self.user.clone().unwrap();
+        if !u.pwd.is_empty() || !u.email.is_some() || !u.phone.is_some() {
+            anyhow::bail!(Errorx::new(self.ctx.locale, I18nKey::UseResetInfo))
+        }
         Ok(())
     }
 
     async fn execute(&self, cmd: &Self::CMD) -> anyhow::Result<Self::R> {
-        let ag = cmd.to_ag(self.user.clone().unwrap());
+        let mut ag = cmd.to_ag(self.user.clone().unwrap());
+        ag.pwd_bcrypt(self.ctx.locale)?;
         match __self.user_repository.update(ag.clone()).await {
             Ok(_) => Ok(ag),
             Err(_) => {

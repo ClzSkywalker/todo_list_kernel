@@ -29,5 +29,7 @@ fn task_api() -> Router {
 }
 
 fn user_api() -> Router {
-    Router::new().route("/", put(user::user_update))
+    Router::new()
+        .route("/", put(user::user_update))
+        .route("/reset", put(user::user_reset_info))
 }

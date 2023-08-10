@@ -5,6 +5,6 @@ use validator::Validate;
 pub struct UserLoginEmailReq {
     #[validate(email)]
     pub email: String,
-    #[validate(length(min = 6))]
+    #[validate(length(min = 6, max = 18))]
     pub pwd: String,
 }

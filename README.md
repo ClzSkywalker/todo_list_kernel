@@ -66,3 +66,29 @@ application
     │       └── qry 查询条件
     └── repository 查询仓储
 ```
+
+https://www.msys2.org/
+
+https://blog.fudenglong.site/2023/02/26/Rust/cross/
+
+cross build --target x86_64-unknown-linux-musl --release
+
+cross build --target  aarch64-linux-android --package bin --release --lib
+
+	
+docker pull togettoyou/ghcr.io.cross-rs.x86_64-unknown-linux-gnu:0.2.5
+docker tag togettoyou/ghcr.io.cross-rs.x86_64-unknown-linux-gnu:0.2.5 ghcr.io/cross-rs/x86_64-unknown-linux-gnu:0.2.5
+
+	
+docker pull togettoyou/ghcr.io.cross-rs.aarch64-linux-android:0.2.5
+docker tag togettoyou/ghcr.io.cross-rs.aarch64-linux-android:0.2.5 ghcr.io/cross-rs/aarch64-linux-android:0.2.5
+
+	
+docker pull togettoyou/ghcr.io.cross-rs.armv7-linux-androideabi:0.2.5
+docker tag togettoyou/ghcr.io.cross-rs.armv7-linux-androideabi:0.2.5 ghcr.io/cross-rs/armv7-linux-androideabi:0.2.5
+
+	
+docker pull togettoyou/ghcr.io.cross-rs.x86_64-linux-android:0.2.5
+docker tag togettoyou/ghcr.io.cross-rs.x86_64-linux-android:0.2.5 ghcr.io/cross-rs/x86_64-linux-android:0.2.5
+
+

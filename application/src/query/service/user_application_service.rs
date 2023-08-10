@@ -48,7 +48,7 @@ where
             }
         };
 
-        match common::utils::bcrypt_verify(data.email.clone(), user.pwd.clone()) {
+        match user.pwd_varify(self.ctx.locale, data.pwd.clone()) {
             Ok(r) => {
                 if !r {
                     anyhow::bail!(Errorx::new(
@@ -57,23 +57,12 @@ where
                     ))
                 }
             }
-            Err(_) => {
-                anyhow::bail!(Errorx::new(
-                    self.ctx.locale,
-                    common::i18n::I18nKey::UserLogin
-                ))
+            Err(e) => {
+                anyhow::bail!(e)
             }
         };
 
-        let token = match jwt::generate_token(user.id, user.team_id_port) {
-            Ok(r) => r,
-            Err(_) => {
-                anyhow::bail!(Errorx::new(
-                    self.ctx.locale,
-                    common::i18n::I18nKey::EncryptionError
-                ))
-            }
-        };
+        let token = user.generate_token(self.ctx.locale)?;
 
         Ok(RespToken {
             token_type: jwt::TOKEN_TYPE.to_string(),

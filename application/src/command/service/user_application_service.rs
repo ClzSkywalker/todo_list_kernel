@@ -1,56 +1,47 @@
 use std::sync::Arc;
 
 use crate::{
-    ability::user::cmd::user_update_command::UserUpdateCommand,
+    ability::user::cmd::{user_reset_info_cmd::UserResetInfoCmd, user_update_cmd::UserUpdateCmd},
     command::iuser_application_service::IUserCmdApplicationService,
     query::model::common::dto::RespToken,
 };
 use base::ddd::{ability::IAbility, application_service::IApplicationService};
 use chrono::Local;
-use common::{contextx::AppContext, errorx::Errorx, jwt};
+use common::{contextx::AppContext, jwt};
 use domain::aggregate::{
     preclude::UserAggregate, user::service::iuser_domain_service::IUserDomainService,
 };
 
-pub struct UserCmdApplicationService<US, UUA>
+pub struct UserCmdApplicationService<US, UUA, URIA>
 where
     US: IUserDomainService,
-    UUA: IAbility<R = UserAggregate, CMD = UserUpdateCommand>,
+    UUA: IAbility<R = UserAggregate, CMD = UserUpdateCmd>,
+    URIA: IAbility<R = UserAggregate, CMD = UserResetInfoCmd>,
 {
     pub ctx: Arc<AppContext>,
     pub user_service: US,
     pub user_update_ability: UUA,
+    pub user_reset_info_ability: URIA,
 }
 
-impl<US, UUA> IApplicationService for UserCmdApplicationService<US, UUA>
+impl<US, UUA, URIA> IApplicationService for UserCmdApplicationService<US, UUA, URIA>
 where
     US: IUserDomainService,
-    UUA: IAbility<R = UserAggregate, CMD = UserUpdateCommand>,
+    UUA: IAbility<R = UserAggregate, CMD = UserUpdateCmd>,
+    URIA: IAbility<R = UserAggregate, CMD = UserResetInfoCmd>,
 {
 }
 
 #[async_trait::async_trait]
-impl<US, UUA> IUserCmdApplicationService for UserCmdApplicationService<US, UUA>
+impl<US, UUA, URIA> IUserCmdApplicationService for UserCmdApplicationService<US, UUA, URIA>
 where
     US: IUserDomainService,
-    UUA: IAbility<R = UserAggregate, CMD = UserUpdateCommand>,
+    UUA: IAbility<R = UserAggregate, CMD = UserUpdateCmd>,
+    URIA: IAbility<R = UserAggregate, CMD = UserResetInfoCmd>,
 {
     async fn create_by_id(&mut self) -> anyhow::Result<RespToken> {
-        let u = match __self.user_service.register().await {
-            Ok(r) => r,
-            Err(e) => {
-                anyhow::bail!(e)
-            }
-        };
-        let token = match jwt::generate_token(u.id, u.team_id_port) {
-            Ok(r) => r,
-            Err(_) => {
-                anyhow::bail!(Errorx::new(
-                    self.ctx.locale,
-                    common::i18n::I18nKey::EncryptionError
-                ))
-            }
-        };
+        let u = self.user_service.register().await?;
+        let token = u.generate_token(self.ctx.locale)?;
 
         Ok(RespToken {
             token_type: jwt::TOKEN_TYPE.to_string(),
@@ -59,8 +50,17 @@ where
         })
     }
 
-    async fn update(&mut self, cmd: &UserUpdateCommand) -> anyhow::Result<()> {
+    async fn update(&mut self, cmd: &UserUpdateCmd) -> anyhow::Result<()> {
         match __self.user_update_ability.execute_ability(cmd).await {
+            Ok(_) => Ok(()),
+            Err(e) => {
+                anyhow::bail!(e)
+            }
+        }
+    }
+
+    async fn reset_user_info(&mut self, cmd: &UserResetInfoCmd) -> anyhow::Result<()> {
+        match __self.user_reset_info_ability.execute_ability(&cmd).await {
             Ok(_) => Ok(()),
             Err(e) => {
                 anyhow::bail!(e)

@@ -80,7 +80,7 @@ where
         let query = uri.query().unwrap_or_default();
 
         let header = req.headers().clone();
-        let version = match header.get("verison") {
+        let version = match header.get("version") {
             Some(r) => r.to_str().unwrap_or_default(),
             None => "",
         };

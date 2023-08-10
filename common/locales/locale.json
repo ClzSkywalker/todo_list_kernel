@@ -48,6 +48,12 @@
     "zh": "token无效"
   },
   {
+    "id": 102003,
+    "key": "TokenGenerate",
+    "en": "token creation failure",
+    "zh": "token创建失败"
+  },
+  {
     "id": 201001,
     "key": "UserCreate",
     "en": "User creation failure",
@@ -70,6 +76,12 @@
     "key": "UserLogin",
     "en": "The user account or password is incorrect",
     "zh": "用户账号或密码错误"
+  },
+  {
+    "id": 201005,
+    "key": "UseResetInfo",
+    "en": "User base information has been reset",
+    "zh": "用户基础信息已被重置过"
   },
   {
     "id": 202001,

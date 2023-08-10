@@ -25,8 +25,8 @@ pub struct TaskCreateCommand {
 impl ICommand for TaskCreateCommand {}
 
 impl TaskCreateCommand {
-    pub fn to_task(&self, created_by: String, task_content_id: String) -> Task {
-        Task {
+    pub fn to_task(&self, created_by: String) -> Task {
+        let mut t = Task {
             id: utils::generate_ulid(),
             uid: created_by,
             devide_id: self.devide_id.clone(),
@@ -42,9 +42,12 @@ impl TaskCreateCommand {
                 id: self.task_mode_id.clone(),
             },
             task_content: TaskContent {
-                id: task_content_id,
-                content: self.task_content.clone(),
+                id: "".to_string(),
+                content: "".to_string(),
             },
-        }
+        };
+        t.new_task_content(self.task_content.clone());
+
+        t
     }
 }

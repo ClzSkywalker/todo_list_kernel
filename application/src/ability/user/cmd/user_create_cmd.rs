@@ -8,7 +8,7 @@ use serde::Deserialize;
 use validator::Validate;
 
 #[derive(Debug, Clone, Deserialize, Validate)]
-pub struct UserCreateCommand {
+pub struct UserCreateCmd {
     pub nick_name: String,
     pub member_type: MemberType,
     pub register_type: RegisterType,
@@ -20,9 +20,9 @@ pub struct UserCreateCommand {
     pub version: String,
 }
 
-impl ICommand for UserCreateCommand {}
+impl ICommand for UserCreateCmd {}
 
-impl UserCreateCommand {
+impl UserCreateCmd {
     pub fn to_ag(&self, tl: Vec<TeamDomainEntity>) -> UserAggregate {
         UserAggregate {
             id: utils::generate_ulid(),

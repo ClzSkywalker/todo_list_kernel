@@ -47,11 +47,10 @@ where
         Ok(())
     }
     async fn execute(&self, cmd: &Self::CMD) -> anyhow::Result<Self::R> {
-        let task = cmd.to_task("test".to_string(), self.task_content_id.clone());
+        let task = cmd.to_task(self.ctx.uid.clone(), self.task_content_id.clone());
         match self.task_repository.update(task.clone()).await {
             Ok(_) => {}
-            Err(e) => {
-                tracing::error!("{},e:{},cmd:{:?}", self.ctx.to_string(), e, cmd);
+            Err(_) => {
                 anyhow::bail!(Errorx::new(
                     self.ctx.locale,
                     common::i18n::I18nKey::TaskUpdate

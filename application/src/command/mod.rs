@@ -4,8 +4,8 @@ use common::contextx::AppContext;
 use infrastructure::{db::repository::new_task_repostiory, service::new_user_domain_service};
 
 use crate::ability::{
-    new_user_update_ability,
     task::{new_task_create_ability, new_task_update_ability},
+    user::{new_user_reset_info_ability, new_user_update_ability},
 };
 
 use self::{
@@ -19,7 +19,6 @@ use self::{
 
 pub mod itask_application_service;
 pub mod iuser_application_service;
-pub mod model;
 pub mod service;
 
 pub fn new_task_cmd_application_service(ctx: Arc<AppContext>) -> impl ITaskCmdApplicationService {
@@ -36,5 +35,6 @@ pub fn new_user_cmd_application_service(ctx: Arc<AppContext>) -> impl IUserCmdAp
         ctx: ctx.clone(),
         user_service: new_user_domain_service(ctx.clone()),
         user_update_ability: new_user_update_ability(ctx.clone()),
+        user_reset_info_ability: new_user_reset_info_ability(ctx.clone()),
     }
 }

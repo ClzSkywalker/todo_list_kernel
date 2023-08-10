@@ -3,20 +3,21 @@ use common::config::VERSION;
 use domain::aggregate::preclude::*;
 use serde::Deserialize;
 
-use crate::command::model::user::UserUpdateReq;
+use crate::ability::share::user::UserResetInfoReq;
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct UserUpdateCommand {
+pub struct UserResetInfoCmd {
     pub id: String,
     pub nick_name: String,
     pub picture: Option<String>,
     pub email: Option<String>,
     pub phone: Option<String>,
+    pub pwd: String,
 }
 
-impl ICommand for UserUpdateCommand {}
+impl ICommand for UserResetInfoCmd {}
 
-impl UserUpdateCommand {
+impl UserResetInfoCmd {
     pub fn to_ag(&self, ag: UserAggregate) -> UserAggregate {
         UserAggregate {
             id: self.id.clone(),
@@ -27,19 +28,20 @@ impl UserUpdateCommand {
             picture: self.picture.clone(),
             email: self.email.clone(),
             phone: self.phone.clone(),
-            pwd: ag.pwd,
+            pwd: self.pwd.clone(),
             team_list: ag.team_list,
             version: VERSION.to_string(),
         }
     }
 
-    pub fn to_self(id: String, req: UserUpdateReq) -> Self {
+    pub fn to_self(id: String, req: UserResetInfoReq) -> Self {
         Self {
             id: id,
             nick_name: req.nick_name,
             picture: req.picture,
             email: req.email,
             phone: req.phone,
+            pwd: req.pwd,
         }
     }
 }

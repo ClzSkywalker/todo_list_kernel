@@ -78,6 +78,6 @@ jsonwebtoken = "8"
 # 正则表达式
 regex = "1"
 # 参数校验
-validator = { version = "0.16", features = ["derive"] }
+validator = { version = "0.16", features = ["derive","phone"] }
 # 加密库
 bcrypt = "0.15"

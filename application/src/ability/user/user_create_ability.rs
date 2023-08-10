@@ -6,7 +6,7 @@ use domain::aggregate::{
     preclude::UserAggregate, user::service::iuser_domain_service::IUserDomainService,
 };
 
-use super::cmd::user_create_command::UserCreateCommand;
+use super::cmd::user_create_cmd::UserCreateCmd;
 
 pub struct UserCreateAbility<US>
 where
@@ -22,7 +22,7 @@ where
     US: IUserDomainService,
 {
     type R = UserAggregate;
-    type CMD = UserCreateCommand;
+    type CMD = UserCreateCmd;
     async fn check_handler(&mut self, _: &Self::CMD) -> anyhow::Result<()> {
         Ok(())
     }
