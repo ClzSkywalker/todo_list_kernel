@@ -41,7 +41,7 @@ impl IRepository for UserRepository {
             deleted_at: Set(Some(Local::now())),
             ..Default::default()
         })
-        .filter(Condition::any().add(Expr::col(UserColumn::DeletedAt).is_null()));
+        .filter(Condition::all().add(Expr::col(UserColumn::DeletedAt).is_null()));
         let res = match &self.ctx.tx {
             Some(r) => active.exec(r).await,
             None => active.exec(&self.ctx.db).await,
@@ -61,7 +61,7 @@ impl IRepository for UserRepository {
         active.updated_at = Set(Some(Local::now()));
 
         let active = UserEntity::update(active)
-            .filter(Condition::any().add(Expr::col(TaskColumn::DeletedAt).is_null()));
+            .filter(Condition::all().add(Expr::col(TaskColumn::DeletedAt).is_null()));
 
         let res = match &self.ctx.tx {
             Some(r) => active.exec(r).await,
@@ -80,7 +80,7 @@ impl IRepository for UserRepository {
         let active = UserEntity::find_by_id(id.clone())
             .find_with_related(TeamEntity)
             .filter(
-                Condition::any()
+                Condition::all()
                     .add(Expr::col((UserEntity, TaskColumn::DeletedAt)).is_null())
                     .add(Expr::col((TeamEntity, TeamColumn::DeletedAt)).is_null()),
             )
@@ -112,7 +112,7 @@ impl IUserRepository for UserRepository {
         let active = UserEntity::find()
             .find_with_related(TeamEntity)
             .filter(
-                Condition::any()
+                Condition::all()
                     .add(Expr::col((UserEntity, UserColumn::Email)).eq(email.clone()))
                     .add(Expr::col((UserEntity, TaskColumn::DeletedAt)).is_null())
                     .add(Expr::col((TeamEntity, TeamColumn::DeletedAt)).is_null()),

@@ -66,7 +66,7 @@ impl IRepository for TeamRepository {
             deleted_at: Set(Some(Local::now())),
             ..Default::default()
         })
-        .filter(Condition::any().add(Expr::col(TeamColumn::DeletedAt).is_null()));
+        .filter(Condition::all().add(Expr::col(TeamColumn::DeletedAt).is_null()));
         let res = match &self.ctx.tx {
             Some(r) => active.exec(r).await,
             None => active.exec(&self.ctx.db).await,
@@ -87,7 +87,7 @@ impl IRepository for TeamRepository {
         active.updated_at = Set(Some(Local::now()));
 
         let active = TeamEntity::update(active)
-            .filter(Condition::any().add(Expr::col(TaskColumn::DeletedAt).is_null()));
+            .filter(Condition::all().add(Expr::col(TaskColumn::DeletedAt).is_null()));
 
         let res = match &self.ctx.tx {
             Some(r) => active.exec(r).await,
@@ -104,7 +104,7 @@ impl IRepository for TeamRepository {
     }
     async fn by_id(&self, id: Self::ID) -> anyhow::Result<Option<Self::AG>> {
         let active = TeamEntity::find_by_id(id.clone())
-            .filter(Condition::any().add(Expr::col(TeamColumn::DeletedAt).is_null()))
+            .filter(Condition::all().add(Expr::col(TeamColumn::DeletedAt).is_null()))
             .limit(1);
         let res = match &__self.ctx.tx {
             Some(r) => active.one(r).await,

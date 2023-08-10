@@ -93,7 +93,7 @@ impl User {
     }
 
     pub fn pwd_varify(&self, locale: Locale, pwd: String) -> anyhow::Result<bool> {
-        match utils::bcrypt_verify(self.pwd.clone(), pwd) {
+        match utils::bcrypt_verify(pwd, self.pwd.clone()) {
             Ok(r) => {
                 if !r {
                     return Ok(false);
