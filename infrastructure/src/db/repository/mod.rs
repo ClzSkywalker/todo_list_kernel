@@ -1,5 +1,6 @@
 pub mod classify_repository;
 pub mod devide_repository;
+pub mod resource_repository;
 pub mod task_mode_repository;
 pub mod task_repository;
 pub mod team_repository;
@@ -11,13 +12,19 @@ use common::contextx::AppContext;
 use domain::aggregate::{
     classify::repository::iclassify_repository::IClassifyRepository,
     devide::repository::idevide_repository::IDevideRepository,
-    preclude::{ClassifyAggregate, DevideAggregate, TaskModeAggregate, TaskAggregate, TeamAggregate},
-    task_mode::repository::itask_mode_repository::ITaskModeRepository, task::repository::itask_repository::ITaskRepository, team::repository::item_repository::ITeamRepository, user::repository::iuser_repository::IUserRepository,
+    preclude::{
+        ClassifyAggregate, DevideAggregate, TaskAggregate, TaskModeAggregate, TeamAggregate,
+    },
+    task::repository::itask_repository::ITaskRepository,
+    task_mode::repository::itask_mode_repository::ITaskModeRepository,
+    team::repository::item_repository::ITeamRepository,
+    user::repository::iuser_repository::IUserRepository,
 };
 
 use self::{
     classify_repository::ClassifyRepository, devide_repository::DevideRepository,
-    task_mode_repository::TaskModeRepository, task_repository::TaskRepository, team_repository::TeamRepository, user_repository::UserRepository,
+    task_mode_repository::TaskModeRepository, task_repository::TaskRepository,
+    team_repository::TeamRepository, user_repository::UserRepository,
 };
 
 pub fn new_classify_repostiory(

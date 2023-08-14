@@ -36,6 +36,12 @@ impl UserCreateCmd {
             pwd: self.pwd.clone(),
             team_list: tl,
             version: VERSION.to_string(),
+            resource: ResouceDomainEntity {
+                id: utils::generate_ulid(),
+                exp: 0,
+                gold_coin: 0,
+                diamond: 0,
+            },
         }
     }
 }

@@ -7,5 +7,8 @@ pub use super::{
     },
     task_mode::model::task_mode::TaskMode as TaskModeAggregate,
     team::model::team::Team as TeamAggregate,
-    user::model::{team::Team as TeamDomainEntity, user::User as UserAggregate},
+    user::model::{
+        resource::Resource as ResouceDomainEntity, team::Team as TeamDomainEntity,
+        user::User as UserAggregate,
+    },
 };

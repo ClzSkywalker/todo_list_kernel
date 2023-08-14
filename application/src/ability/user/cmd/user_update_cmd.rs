@@ -30,6 +30,7 @@ impl UserUpdateCmd {
             pwd: ag.pwd,
             team_list: ag.team_list,
             version: VERSION.to_string(),
+            resource: ag.resource,
         }
     }
 

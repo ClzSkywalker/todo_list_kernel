@@ -1,6 +1,8 @@
 pub mod classify_po;
 pub mod common;
 pub mod devide_po;
+pub mod dto_po;
+pub mod resource_po;
 pub mod task_content_po;
 pub mod task_mode_po;
 pub mod task_po;

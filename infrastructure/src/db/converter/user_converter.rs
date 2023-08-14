@@ -1,7 +1,7 @@
 use super::super::model::preclude::*;
 use domain::aggregate::preclude::*;
 
-pub fn deserialize(u: UserModel, tl: Vec<TeamModel>) -> UserAggregate {
+pub fn deserialize(u: UserModel, tl: Vec<TeamModel>, res: ResourceModel) -> UserAggregate {
     UserAggregate {
         id: u.id,
         nick_name: u.nick_name,
@@ -19,6 +19,12 @@ pub fn deserialize(u: UserModel, tl: Vec<TeamModel>) -> UserAggregate {
                 name: item.name.clone(),
             })
             .collect::<Vec<TeamDomainEntity>>(),
+        resource: ResouceDomainEntity {
+            id: res.id,
+            exp: res.exp,
+            gold_coin: res.gold_coin,
+            diamond: res.diamond,
+        },
         version: u.version,
     }
 }

@@ -22,15 +22,13 @@ pub struct Model {
     pub version: String,
 }
 
-// impl EntityName for Model {
-//     fn table_name(&self) -> &str {
-//         "user"
-//     }
-// }
-
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
+    // one to one
+    Resource,
+    // one to many
     Team,
+    // many to many
     UserTeam,
 }
 
@@ -42,6 +40,7 @@ impl RelationTrait for Relation {
                 .from(Column::Id)
                 .to(UserTeamColumn::Uid)
                 .into(),
+            Relation::Resource => Entity::has_one(ResourceEntity).into(),
         }
     }
 }
@@ -59,6 +58,12 @@ impl Related<TeamEntity> for Entity {
 
     fn via() -> Option<RelationDef> {
         Some(UserTeamRelation::User.def().rev())
+    }
+}
+
+impl Related<ResourceEntity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Resource.def()
     }
 }
 

@@ -31,6 +31,7 @@ impl UserResetInfoCmd {
             pwd: self.pwd.clone(),
             team_list: ag.team_list,
             version: VERSION.to_string(),
+            resource: ag.resource,
         }
     }
 

@@ -7,6 +7,10 @@ pub use super::super::model::{
         ActiveModel as DevideActiveModel, Column as DevideColumn, Entity as DevideEntity,
         Model as DevideModel, Relation as DevideRelation,
     },
+    resource_po::{
+        ActiveModel as ResourceActiveModel, Column as ResourceColumn, Entity as ResourceEntity,
+        Model as ResourceModel, Relation as ResourceRelation,
+    },
     task_content_po::{
         ActiveModel as TaskContentActiveModel, Column as TaskContentColumn,
         Entity as TaskContentEntity, Model as TaskContentModel,
@@ -29,6 +33,6 @@ pub use super::super::model::{
     },
     user_to_team_po::{
         ActiveModel as UserTeamActiveModel, Column as UserTeamColumn, Entity as UserTeamEntity,
-        Model as UserTeamModel, ModelIden as UserTeamIden, Relation as UserTeamRelation,
+        Model as UserTeamModel, Relation as UserTeamRelation,
     },
 };

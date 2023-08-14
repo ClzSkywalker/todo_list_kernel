@@ -166,6 +166,23 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        manager
+            .create_table(
+                Table::create()
+                    .table(Resources::Table)
+                    .if_not_exists()
+                    .col(ColumnDef::new(Base::Id).string().not_null().primary_key())
+                    .col(ColumnDef::new(Base::CreatedAt).date_time())
+                    .col(ColumnDef::new(Base::UpdatedAt).date_time())
+                    .col(ColumnDef::new(Base::DeletedAt).date_time())
+                    .col(ColumnDef::new(Resources::Uid).integer().unique_key())
+                    .col(ColumnDef::new(Resources::Diamond).integer())
+                    .col(ColumnDef::new(Resources::GoldCoin).integer())
+                    .col(ColumnDef::new(Resources::Exp).integer())
+                    .to_owned(),
+            )
+            .await?;
+
         Ok(())
     }
 
@@ -275,4 +292,13 @@ enum TaskMode {
     TeamId,
     ModeType,
     Config,
+}
+
+#[derive(Iden)]
+enum Resources {
+    Table,
+    Uid,
+    Exp,
+    GoldCoin,
+    Diamond,
 }

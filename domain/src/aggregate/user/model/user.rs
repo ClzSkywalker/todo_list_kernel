@@ -6,7 +6,7 @@ use serde::Serialize;
 
 use crate::share::value_object::user_type::{MemberType, RegisterType};
 
-use super::team::Team;
+use super::{resource::Resource, team::Team};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct User {
@@ -20,6 +20,7 @@ pub struct User {
     pub phone: Option<String>,
     pub pwd: String,
     pub team_list: Vec<Team>,
+    pub resource: Resource,
     pub version: String,
 }
 impl IAggregate for User {}
@@ -27,6 +28,12 @@ impl IAggregate for User {}
 impl User {
     pub fn init_data(ctx: Arc<AppContext>) -> Self {
         let tid = common::utils::generate_ulid();
+        let res = Resource {
+            id: common::utils::generate_ulid(),
+            exp: 0,
+            gold_coin: 0,
+            diamond: 0,
+        };
         match ctx.locale {
             Locale::Zh => Self {
                 id: common::utils::generate_ulid(),
@@ -42,6 +49,7 @@ impl User {
                     id: tid,
                     name: String::from(""),
                 }],
+                resource: res,
                 version: VERSION.to_string(),
             },
             Locale::En => Self {
@@ -58,6 +66,7 @@ impl User {
                     id: tid,
                     name: String::from(""),
                 }],
+                resource: res,
                 version: VERSION.to_string(),
             },
         }

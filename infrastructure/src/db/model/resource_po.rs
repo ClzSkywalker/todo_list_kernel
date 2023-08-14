@@ -1,9 +1,9 @@
-use sea_orm::entity::prelude::*;
+use sea_orm::{entity::prelude::*, ActiveValue::NotSet, Set};
 
 use super::preclude::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Default)]
-#[sea_orm(table_name = "user_to_team")]
+#[sea_orm(table_name = "resources")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: String,
@@ -11,33 +11,24 @@ pub struct Model {
     pub updated_at: Option<DateTimeLocal>,
     pub deleted_at: Option<DateTimeLocal>,
     pub uid: String,
-    pub tid: String,
+    pub exp: i64,
+    pub gold_coin: i64,
+    pub diamond: i64,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
     User,
-    Team,
 }
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
             Relation::User => Entity::belongs_to(UserEntity)
-                .from(Column::Uid)
+                .from(Column::Id)
                 .to(UserColumn::Id)
                 .into(),
-            Relation::Team => Entity::belongs_to(TeamEntity)
-                .from(Column::Tid)
-                .to(TeamColumn::Id)
-                .into(),
         }
-    }
-}
-
-impl Related<TeamEntity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Team.def()
     }
 }
 
@@ -48,3 +39,18 @@ impl Related<UserEntity> for Entity {
 }
 
 impl ActiveModelBehavior for ActiveModel {}
+
+impl Model {
+    pub fn into_active_base(&self) -> ActiveModel {
+        ActiveModel {
+            id: Set(self.id.clone()),
+            created_at: NotSet,
+            updated_at: NotSet,
+            deleted_at: NotSet,
+            uid: Set(self.uid.clone()),
+            exp: Set(self.exp),
+            gold_coin: Set(self.gold_coin),
+            diamond: Set(self.diamond),
+        }
+    }
+}

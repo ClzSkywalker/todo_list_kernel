@@ -5,7 +5,9 @@ use chrono::Local;
 use common::contextx::AppContext;
 use domain::aggregate::{preclude::*, user::repository::iuser_repository::IUserRepository};
 use migration::Expr;
-use sea_orm::{ActiveModelTrait, Condition, EntityTrait, QueryFilter, QuerySelect, Set};
+use sea_orm::{
+    prelude::*, ActiveModelTrait, Condition, EntityTrait, QueryFilter, QuerySelect, Set,
+};
 
 use super::super::model::preclude::*;
 use crate::db::converter::user_converter;
@@ -78,18 +80,18 @@ impl IRepository for UserRepository {
     }
     async fn by_id(&self, id: Self::ID) -> anyhow::Result<Option<Self::AG>> {
         let active = UserEntity::find_by_id(id.clone())
-            .find_with_related(TeamEntity)
+            .find_also_related(ResourceEntity)
             .filter(
                 Condition::all()
                     .add(Expr::col((UserEntity, TaskColumn::DeletedAt)).is_null())
-                    .add(Expr::col((TeamEntity, TeamColumn::DeletedAt)).is_null()),
+                    .add(Expr::col((ResourceEntity, ResourceColumn::DeletedAt)).is_null()),
             )
             .limit(1);
         let res = match &__self.ctx.tx {
             Some(r) => active.all(r).await,
             None => active.all(&self.ctx.db).await,
         };
-        let res = match res {
+        let res1 = match res {
             Ok(r) => r,
             Err(e) => {
                 tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, id);
@@ -97,12 +99,41 @@ impl IRepository for UserRepository {
             }
         };
 
-        let res = match res.last() {
-            Some(r) => r.clone(),
+        let res1 = match res1.last() {
+            Some((r1, r2)) => match r2 {
+                Some(r) => (r1, r),
+                None => return Ok(None),
+            },
             None => return Ok(None),
         };
 
-        Ok(Some(user_converter::deserialize(res.0, res.1)))
+        let active = TeamEntity::find()
+            .join_rev(sea_query::JoinType::Join, UserTeamRelation::Team.def())
+            .filter(
+                Condition::all()
+                    .add(Expr::col((TeamEntity, TeamColumn::DeletedAt)).is_null())
+                    .add(Expr::col((UserTeamEntity, UserTeamColumn::DeletedAt)).is_null())
+                    .add(Expr::col((UserTeamEntity, UserTeamColumn::Uid)).eq(id.clone())),
+            );
+
+        let res2 = match &self.ctx.tx {
+            Some(r) => active.all(r).await,
+            None => active.all(&self.ctx.db).await,
+        };
+
+        let res2 = match res2 {
+            Ok(r) => r,
+            Err(e) => {
+                tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, id);
+                anyhow::bail!(e)
+            }
+        };
+
+        Ok(Some(user_converter::deserialize(
+            res1.0.clone(),
+            res2,
+            res1.1.clone(),
+        )))
     }
 }
 
@@ -110,19 +141,19 @@ impl IRepository for UserRepository {
 impl IUserRepository for UserRepository {
     async fn find_by_email(&self, email: String) -> anyhow::Result<Option<UserAggregate>> {
         let active = UserEntity::find()
-            .find_with_related(TeamEntity)
+            .find_also_related(ResourceEntity)
             .filter(
                 Condition::all()
-                    .add(Expr::col((UserEntity, UserColumn::Email)).eq(email.clone()))
                     .add(Expr::col((UserEntity, TaskColumn::DeletedAt)).is_null())
-                    .add(Expr::col((TeamEntity, TeamColumn::DeletedAt)).is_null()),
+                    .add(Expr::col((ResourceEntity, ResourceColumn::DeletedAt)).is_null()),
             )
             .limit(1);
-        let res = match &self.ctx.tx {
+        let res1 = match &self.ctx.tx {
             Some(r) => active.all(r).await,
             None => active.all(&self.ctx.db).await,
         };
-        let res = match res {
+
+        let res1 = match res1 {
             Ok(r) => r,
             Err(e) => {
                 tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, email);
@@ -130,11 +161,40 @@ impl IUserRepository for UserRepository {
             }
         };
 
-        let res = match res.last() {
-            Some(r) => r.clone(),
+        let res1 = match res1.last() {
+            Some((r1, r2)) => match r2 {
+                Some(r) => (r1, r),
+                None => return Ok(None),
+            },
             None => return Ok(None),
         };
 
-        Ok(Some(user_converter::deserialize(res.0, res.1)))
+        let active = TeamEntity::find()
+            .join_rev(sea_query::JoinType::Join, UserTeamRelation::Team.def())
+            .filter(
+                Condition::all()
+                    .add(Expr::col((TeamEntity, TeamColumn::DeletedAt)).is_null())
+                    .add(Expr::col((UserTeamEntity, UserTeamColumn::DeletedAt)).is_null())
+                    .add(Expr::col((UserTeamEntity, UserTeamColumn::Uid)).eq(email.clone())),
+            );
+
+        let res2 = match &self.ctx.tx {
+            Some(r) => active.all(r).await,
+            None => active.all(&self.ctx.db).await,
+        };
+
+        let res2 = match res2 {
+            Ok(r) => r,
+            Err(e) => {
+                tracing::error!("{:?},e:{},model:{:?}", self.ctx, e, email);
+                anyhow::bail!(e)
+            }
+        };
+
+        Ok(Some(user_converter::deserialize(
+            res1.0.clone(),
+            res2,
+            res1.1.clone(),
+        )))
     }
 }
